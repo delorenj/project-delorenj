@@ -161,3 +161,31 @@ A content-intelligence tool, **not** the renderer. Connects companies, roles, pr
 - Postprocessing tasteful — bloom can murder mobile GPUs.
 - Reduced-motion and low-power modes.
 - Keep text in HTML so the site is useful even with WebGL disabled.
+
+## L. Integration Patterns (from grounding research — for Architecture to ratify)
+
+*Source: `research-digest.md`. These are the concrete mechanisms behind PRD §10's "what must be true"; the Architecture phase should confirm or revise.*
+
+- **Single canvas topology:** exactly ONE persistent `GlobalCanvas` fixed behind the scrolling document for the whole site; never a per-section/per-era `<Canvas>`. Switch era scene-graphs via the `visible` prop (stay mounted, pre-warm materials); never conditional mount/unmount at runtime (browsers cap WebGL contexts ~8–16 and kill the oldest; remount recompiles materials → hitches at transitions). Buy-vs-build reference: `14islands/r3f-scroll-rig` (`useCanvas`/tunneling, DOM-proxy tracking).
+- **Single scroll authority:** GSAP ScrollTrigger on the real (native / Lenis) document is the ONLY scroll authority — no `drei ScrollControls` in the same route (its transformed overlay div breaks the SSR/semantic truth layer and desyncs the scrubbed camera).
+- **Single RAF loop:** Lenis `autoRaf:false`; `gsap.ticker.lagSmoothing(0)`; drive `lenis.raf()` from `gsap.ticker` (convert `time*1000` s→ms); `ScrollTrigger.update()` on Lenis's scroll event. Two competing RAF loops cause visible DOM↔WebGL jitter.
+- **State boundary:** per-frame values (camera position, scrollProgress, physics) live in refs or are read via `store.getState()` inside `useFrame` — NEVER `setState` in `useFrame`/scroll callbacks. React re-render reserved for discrete UI only (activeEra, qualityTier, reducedMotion). Routing 60fps updates through React's scheduler is the #1 R3F perf failure.
+- **Camera model:** author the whole ground→orbit→deep-space journey as ONE scrubbable timeline; each frame map `scrollProgress → timeline position` (`tl.seek(offset*duration)`); reuse the same timeline for click-to-launch by tweening the playhead to a waypoint (don't hijack scroll). Derive BOTH DOM section heights and world waypoint offsets from one shared config to prevent drift. If Theatre.js: Studio is dev-only (NODE_ENV-guarded, tree-shaken), animation baked to a checked-in `state.json`. (Codrops "camera fly-through on scroll with Theatre.js + R3F" is the concrete pattern — but it omits `prefers-reduced-motion`; close that gap.)
+- **Rendering mode:** `frameloop='demand'` + explicit `invalidate()` during scroll/tween/physics; zero renders when idle; `regress()` during interaction.
+- **Physics scope:** Rapier scoped to active-era accent props only; world paused when the era is off-screen; disabled entirely in Low tier / reduced-motion; raycasting throttled ~30Hz.
+- **Postprocessing:** single `@react-three/postprocessing` EffectComposer; selective bloom via emissive materials + `luminanceThreshold≈1` (not global bloom); full stack desktop/tier3 only; bloom at ½–¼ res on tier2; disabled on mobile/tier≤1. DOM legibility must never depend on postprocessing.
+- **Quality tiering:** `pmndrs/detect-gpu` (tier 0–3) at boot sets initial budgets; `drei PerformanceMonitor` drives runtime up/down-grade with hysteresis (shed order: postprocessing → particle count → DPR → LOD). Tier 0 / no WebGL2 / `webglcontextlost` → serve the Static Timeline.
+- **SSR island:** the WebGL layer is a `next/dynamic({ ssr:false })` `'use client'` island mounted post-hydration on top of already-SSR'd DOM, with a poster/skeleton. Optionally opt into the `Sec-CH-Prefers-Reduced-Motion` client hint so SSR ships the static timeline (and skips the R3F bundle) from the first byte.
+- **Composable rendering:** shared material/particle/transition modules reused per era (à la The Monolith's "composable rendering systems") — not N bespoke pipelines — so a solo builder can maintain 5–9 eras and add more by config.
+
+## M. Reference-Class / Prior Art
+
+*From `research-digest.md` — proven analogs establishing feasibility + the credibility bar.*
+
+- **The Monolith Project** — <https://themonolithproject.net> — closest structural analog: 13-scene scroll narrative on the exact stack (Three.js + R3F + GSAP + shaders + GPU particles); Codrops case study documents the composable-rendering pattern.
+- **Bruno Simon** — <https://bruno-simon.com> — reference-class solo WebGL portfolio; onboarding teaches interaction in 3–5s, physics is legible/purposeful, repo is public (credibility multiplier).
+- **Explore Primland** — <https://explore.ownprimland.com> — scroll-driven aerial flythrough; proves altitude/scale reads from atmospheric cues, not camera height alone.
+- **Sébastien Lempens** — <https://sebastien-lempens.com> — scroll journey with per-segment camera-mode variety (avoids monotony over a long scroll).
+- **Igloo Inc** — <https://igloo.inc> — journey via structural navigation over effect density (the "one defended idea / restraint" exemplar).
+- **Codrops — camera fly-through on scroll (Theatre.js + R3F)** — <https://tympanus.net/codrops/2023/02/14/animate-a-camera-fly-through-on-scroll-using-theatre-js-and-react-three-fiber/> — concrete single-timeline camera-authoring tutorial (note: add reduced-motion, which it omits).
+- **14islands/r3f-scroll-rig** — <https://github.com/14islands/r3f-scroll-rig> — production single-GlobalCanvas + scrolling-HTML pattern; the buy-vs-build reference.
