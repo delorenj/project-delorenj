@@ -31,22 +31,42 @@ Rationale: the product has two co-equal identities — a cinematic WebGL experie
 - **Babylon.js / PlayCanvas** — strong for a real 3D game/explorable world; less natural where the HTML/React content layer, MDX publishing, and recruiter navigation must be first-class. Rejected.
 - **Raw Three.js** — max control, but R3F gives near-equal control with a cleaner component model, easier state integration, and a more maintainable content-driven site. Rejected in favor of R3F.
 
-## C. World Engine — year → distance mapping
+## C. World Engine — Career Sequence → distance mapping (+ motion constants)
+
+**Why sequence, not raw year:** the real career has overlapping tenures (Warby 2013 inside ClassPass 2013–2016; Splash 2014–2018 overlapping ClassPass and the start of Justworks; ACD 2023–present overlapping Justworks). A pure `year → distance` function is therefore *not single-valued* and cannot place concurrent eras at distinct altitudes. The world axis is a monotonic **Career Sequence** of non-overlapping segments; each segment's *length* is sized by duration (clamped), and a year *label* is derived per position (monotone, never decreases). This backs FR-1/FR-5/FR-6.
 
 ```ts
-const START_YEAR = 2004;
-const PIXELS_PER_YEAR = 4200;      // tune for "3–5 wheel notches per year"
-const WORLD_UNITS_PER_YEAR = 35;
+// Each Era is one contiguous segment on the Primary Track, in narrative order.
+type EraSegment = {
+  id: string;
+  order: number;                 // 0..8 (Prologue..Axioms)
+  band: AltitudeBand;
+  durationYears: number | null;  // null for Prologue (pre-roll) and Axioms (atemporal finale)
+  yearLabelStart?: number;       // for HUD label only; omitted for atemporal segments
+  yearLabelEnd?: number;
+  concurrentRoleIds?: string[];  // co-located artifacts, NOT their own segment
+};
 
-function yearToScrollY(year: number) {
-  return (year - START_YEAR) * PIXELS_PER_YEAR;
-}
-function yearToWorldY(year: number) {
-  return (year - START_YEAR) * WORLD_UNITS_PER_YEAR;
-}
+const SPAN_MIN = 1.0;            // floor (in "scroll screens") so short eras still register
+const SPAN_MAX = 3.5;            // ceiling so the longest tenure isn't a tedious scroll (backs §15 cap + FR-5)
+const SPAN_PER_YEAR = 0.5;       // base rate before clamping; tune for "3–5 wheel-notches/year" feel
+
+// span(era) = clamp(durationYears * SPAN_PER_YEAR, SPAN_MIN, SPAN_MAX);
+//   Prologue -> fixed SPAN_MIN pre-roll at the very bottom (no negative positions; fixes the old START_YEAR=2004 bug)
+//   Axioms   -> fixed anchor segment at the very top (atemporal finale)
+// Cumulative segment offsets define scroll span and world altitude; camera & HUD read the current segment.
 ```
 
-A longer job physically occupies more world distance (backs FR-5). Virtual scroll state keeps year mapping stable regardless of literal document height (backs FR-1).
+**Motion constants referenced by the FRs (tune in dev via leva/tweakpane):**
+```ts
+const CAMERA_SMOOTHING_TAU_MS = 120;   // FR-2 damped-follow time-constant (bounded, not 1:1)
+const MAX_CAMERA_TILT_DEG     = 12;    // FR-4 tilt ceiling; 0 in reduced-motion
+const TRAVEL_MS_PER_SEGMENT   = 550;   // FR-3 base; total launch duration scales with segments crossed
+const TRAVEL_MS_MAX           = 2600;  // FR-3 ceiling so a full ground->deep-space launch stays snappy
+const PHYSICS_BODY_CAP        = { tier3: 40, tier2: 20, tier1: 8, tier0: 0 }; // FR-22/FR-24 per Fidelity Tier
+```
+
+Virtual scroll state keeps the mapping stable regardless of literal document height (backs FR-1). Derive DOM section heights **and** world waypoint offsets from this one config to prevent drift (backs §10 CLS).
 
 ## D. Career Data Layer — proposed types (backs FR-15/16/17)
 
@@ -83,33 +103,47 @@ type CareerWorldState = {
   scrollY: number;
   currentYear: number;
   activeWaypointId?: string;
-  cameraMode: "free-scroll" | "jumping" | "inspect";   // maps to PRD "Motion Mode"
+  cameraMode: "free-scroll" | "waypoint-jump" | "inspect";   // PRD "Motion Mode" — use these literals verbatim
   reducedMotion: boolean;
 };
 ```
 
-This single source of truth powers: the rendered world, the Timeline Rail, project detail pages, SEO HTML fallback, the Knowledge Graph, résumé page, and jump-to-era nav.
+This single source of truth powers: the rendered world, the Timeline Rail, project detail pages, SEO HTML fallback, résumé page, and jump-to-era nav. (The Knowledge Graph is a *producer* of this layer, not a consumer of it — see §I.)
 
 ## E. Motion Controller — waypoint jump (backs FR-3)
 
 ```ts
-function jumpToWaypoint(waypoint: CareerWaypoint) {
+function jumpToWaypoint(era: EraSegment) {
+  const targetScroll = segmentScrollOffset(era.order);           // from §C cumulative offsets
+  const segmentsCrossed = Math.abs(era.order - currentEraOrder);
   gsap.to(scrollState, {
-    y: yearToScrollY(waypoint.startYear),
-    duration: computeTravelDuration(currentYear, waypoint.startYear), // farther = longer
+    y: targetScroll,
+    duration: Math.min(segmentsCrossed * TRAVEL_MS_PER_SEGMENT, TRAVEL_MS_MAX) / 1000, // farther = longer, bounded
     ease: "power3.inOut",
     onUpdate: syncCameraToScroll,
   });
 }
 ```
 
-Two movement modes: **natural scroll** (camera follows a smoothed scroll-derived target) and **waypoint jump** (nonlinear tween that accelerates, arcs, eases in). Must be interruptible.
+Two movement modes: **natural scroll** (camera follows a smoothed scroll-derived target, `CAMERA_SMOOTHING_TAU_MS`) and **waypoint-jump** (nonlinear tween that accelerates, arcs, eases in). Must be interruptible. **Deep-link cold load** does NOT tween from the bottom — it sets `scrollState.y = segmentScrollOffset(target)` directly and opens the panel (backs FR-21); reduced-motion anchors instantly.
 
 ## F. Scene Chunk System (backs FR-6/7)
 
-Do not render the whole universe at once. Chunked scenes, each lazy-loading GLTFs/textures/shaders/particles near the camera:
+Do not render the whole universe at once. Chunked scenes lazy-load GLTFs/textures/shaders/particles near the camera. **Explicit Era→Scene mapping** (FR-6 permits 1-Era→N-Scene; every Era has ≥1 Scene, no orphans):
 
-`GroundScene`, `RadioLabScene`, `WebEraScene`, `CreativeAgencyScene`, `VisionCloudScene`, `StartupCloudCityScene`, `StratosphereArchitectureScene`, `OrbitAIScene`, `DeepSpaceAxiomsScene`.
+| Era (# / band) | Scene Chunk(s) |
+|---|---|
+| 0 Prologue (`ground`) | `PrologueLaunchpadScene` |
+| 1 BAE (`ground`) | `RadioLabScene` |
+| 2 Web/Agency (`low-atmosphere`) | `WebEraScene` **+** `CreativeAgencyScene` *(intentional 1→2: Rails/Ajax vs Flash/agency)* |
+| 3 Warby (`clouds`) | `VisionCloudScene` |
+| 4 ClassPass/SagePoint (`clouds`) | `StartupCloudCityScene` |
+| 5 Splash (`clouds`) | `PlatformDecompScene` |
+| 6 Justworks (`stratosphere`) | `StratosphereArchitectureScene` |
+| 7 ACD/IntelliForia (`orbit`) | `OrbitAIScene` |
+| 8 Axioms (`deep-space`) | `DeepSpaceAxiomsScene` |
+
+Per FR-7: scene-graph nodes stay mounted (no recompile hitch); GPU textures/geometry are disposed/reloaded outside the adjacent-era window to hold the §10 mobile texture budget. Each scene has a bounded loading state + degraded fallback (FR-33).
 
 ## G. DOM + Canvas split (backs FR-10/11/14)
 
@@ -141,7 +175,7 @@ Resume + LinkedIn + GitHub + Medium + essays
         -> WebGL / HTML Portfolio Experience
 ```
 
-A content-intelligence tool, **not** the renderer. Connects companies, roles, projects, technologies, patterns, essays, GitHub projects, AI concepts, dates, visual motifs, relationships — then exports structured data the world consumes. Encodes the through-line (BAE→signals→architecture→patterns→AI orchestration; SagePoint→taxonomy→RAG→knowledge graphs; TimeEngine→layered abstraction; Axioms↔whole arc). Open question (PRD §8 Q7): is "Ace Knowledge Graph" a specific tool or a generic enrichment step?
+A tool-agnostic content/authoring aid, **not** the renderer (PRD §8 Q7 RESOLVED — no vendor lock-in, post-MVP). Connects companies, roles, projects, technologies, patterns, essays, GitHub projects, AI concepts, dates, visual motifs, relationships — then exports structured data the world consumes. Encodes the through-line (BAE→signals→architecture→patterns→AI orchestration; SagePoint→taxonomy→RAG→knowledge graphs; TimeEngine→layered abstraction; Axioms↔whole arc). It is a **producer** of Career Data Layer content, never a consumer of it.
 
 ## J. Proposed Build Sequence (maps to PRD §6 MVP + phasing)
 
