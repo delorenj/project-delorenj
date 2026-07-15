@@ -22,6 +22,8 @@ Why it matters: the site must communicate, in the first thirty seconds and again
 
 **Positioning principle (credibility over spectacle).** For this audience — recruiters, founders, hiring managers, senior/staff peers — the real tension is *credibility vs. spectacle*, not WebGL vs. content. Hiring managers are blunt: "if the most interesting technical thing in your portfolio is the portfolio website itself, you have a problem." The move that makes the spectacle *raise* credibility rather than lower it is that the ascent metaphor is **diegetic to this specific career** — radio waves → web → computer vision → distributed systems → agentic AI — so the spectacle *is* the résumé and *is* a live demonstration of the graphics-and-agentic-AI engineering being claimed. This imposes three disciplines the rest of the PRD enforces: (1) commit to the **one defended idea** (the vertical time+altitude ascent) and budget everything around restraint — no "shader zoo" where every scene competes as a hero and nothing breathes; (2) structure each era as a **film beat** (entrance → calm readable *hold* → exit) that links in seconds to a real deep-dive (architecture, decisions, tradeoffs, measurable impact) and, where possible, a live demo or repo; (3) ship a genuinely **co-equal, SSR'd truth layer** so an information-seeker gets the full story in under 30 seconds without ever booting WebGL. Shipping something janky on a recruiter's mid-tier phone actively *destroys* the signal the site exists to send.
 
+**The source code is itself an exhibit (the third layer).** Beyond the spectacle and the truth layer, the **repository is a deliberate demonstration**. The site is AI-built — and that is the point, not a disclaimer. An inspector who opens the source finds code that adheres to Jarad's personal style and software-engineering discipline (layered, abstracted at the right seams, modular, documented) *and* is conspicuously **AI-aware**: skill showcases planted as **easter eggs** for anyone who chooses to inspect or challenge him, and **embedded guidance for other "team members"** (human or agent) that is passively helpful to whoever works in the code next. This closes the "why does an engineer have a game site" gap from the other direction: the codebase proves he can *direct AI to produce work that embodies his standards and his Axioms of AI* — the medium becomes the message. The repository is therefore public and inspection-worthy by design (see §4.8).
+
 ## 2. Target User
 
 ### 2.1 Jobs To Be Done
@@ -29,6 +31,7 @@ Why it matters: the site must communicate, in the first thirty seconds and again
 - **Assess fast (recruiter / hiring manager):** "In a couple minutes, tell me whether this person is senior, real, and worth a conversation." Needs skimmable truth *and* a memorable impression.
 - **Judge depth (founder / hiring principal / staff+ interviewer):** "Show me the arc — did they actually operate at scale, and do they think in systems and patterns?" Wants to drill into architecture and AI work.
 - **Be delighted and share (technical peer / community):** "This is the kind of craft I respect." Explores the spectacle, inspects artifacts, and shares the link.
+- **Prove it under inspection (skeptic / challenger):** "Nice site — but is the *code* real, or is it AI slop?" Opens the repo to test the claim, and instead finds disciplined, well-architected, documented, AI-aware code with easter eggs and helpful embedded guidance — and comes away *more* convinced, not less.
 - **For the builder (Jarad):** "A living artifact of my career and my Axioms of AI that is unmistakably *mine* — a spiritual successor to jaradd.com (2006) — that earns conversations and callbacks and is fun to keep evolving."
 - **For everyone:** find the facts (roles, dates, tech, links, résumé) even if they skip the spectacle or can't run it.
 
@@ -70,6 +73,13 @@ Why it matters: the site must communicate, in the first thirty seconds and again
   - **Climax:** Sam reads the whole career comfortably and never has to fight the interface.
   - **Resolution:** Sam gets 100% of the *content* value with 0% of the motion cost. **Edge case:** a visible, discoverable toggle lets any visitor switch between World and Static Timeline regardless of OS setting.
 
+- **UJ-5. Alex, a skeptical staff engineer, opens the source to call the bluff.**
+  - **Persona + context:** Alex has seen a hundred flashy portfolios and assumes the impressive part is a template or AI slop; wants to know if the person behind it can actually engineer.
+  - **Entry state:** on the site, mildly impressed, reflexively looking for the repo link.
+  - **Path:** finds the (surfaced-by-design) link to the public source, clones or browses it, and starts reading — architecture, module boundaries, docs, commit hygiene. Along the way they trip over an easter egg planted in the source and notice the embedded "for whoever's editing this next" guidance.
+  - **Climax:** the realization that the code is disciplined *and* deliberately AI-aware — that the site is a working demonstration of directing AI to build to a real engineer's standard.
+  - **Resolution:** the skepticism flips to respect; Alex is now the strongest possible advocate. **Edge case:** even a hostile reader who dislikes the concept has to concede the engineering underneath is legitimate.
+
 ## 3. Glossary
 
 *Downstream workflows and readers must use these terms exactly. No synonyms elsewhere in the PRD.*
@@ -97,6 +107,10 @@ Why it matters: the site must communicate, in the first thirty seconds and again
 - **Reduced-Motion Mode** — the experience state entered when `prefers-reduced-motion` is set or the visitor toggles it; presents the Static Timeline and suppresses large motion.
 - **Fidelity Tier** — a device-appropriate quality level (e.g., full / reduced / static) selected by capability detection and performance headroom.
 - **Axioms of AI** — Jarad's authored framework (e.g., AI/HE Ratio, "agent as employee," requirements & acceptance criteria as forces); the deep-space climax content.
+- **Source-as-Exhibit** — the principle that the site's public repository is itself a portfolio artifact: AI-built code that demonstrably meets Jarad's engineering standards and is AI-aware. The third layer alongside the Spectacle Layer and Content Truth Layer.
+- **Easter Egg** — a deliberate, discoverable skill-showcase or delight planted in the source (or the experience) for those who inspect or challenge — not required to use the site, rewarding to find.
+- **Embedded Team Guidance** — passively-helpful, agent- and human-oriented context authored into the repo (e.g., agent-context files, well-placed comments, module docs) that helps whoever edits the code next and demonstrates Jarad's AI-orchestration philosophy.
+- **Inspector / Challenger** — the persona who reads the source to test whether the craft is real (UJ-5).
 
 ## 4. Features
 
@@ -186,17 +200,18 @@ Opening an Artifact or Waypoint reveals a Detail Panel containing that item's re
 - Every Waypoint and interactive Artifact maps to a Detail Panel whose content comes from the Career Data Layer.
 - Panels are keyboard-dismissable and focus-managed (see FR-27).
 
-#### FR-12: Résumé access
-The visitor can view and download a current résumé from anywhere in the experience.
+#### FR-12: Résumé access (MDX single-source)
+The visitor can view and download a current résumé from anywhere in the experience. The résumé is authored once in **MDX** (single source, for flexible control and portability) and rendered as an accessible HTML page, with an exportable PDF derived from the same source.
 **Consequences (testable):**
 - A résumé affordance is reachable from the persistent UI (not buried in one Era).
-- Downloaded file is a real document (e.g., PDF). `[ASSUMPTION: PDF download of a maintained résumé; confirm format/source.]`
+- The HTML résumé and the downloadable PDF derive from the same MDX source (no divergent copies).
+- The HTML résumé is crawlable/indexable and readable without the Spectacle Layer.
 
-#### FR-13: Outbound & project links
-Detail Panels and persistent UI expose outbound links (GitHub, Medium, company/project write-ups, contact) that open correctly.
+#### FR-13: Outbound, contact & project links
+Detail Panels and persistent UI expose outbound links that open correctly: **LinkedIn** (`linkedin.com/in/delorenj`, the authoritative career source), **GitHub**, **Medium**, the public **source repository** (the "inspect/challenge me" hook — see §4.8), company/project write-ups, and a lightweight **contact** affordance (email + LinkedIn — no form in v1).
 **Consequences (testable):**
 - Links resolve to the correct destinations and open in an appropriate target.
-- `[ASSUMPTION: contact = email/LinkedIn; confirm preferred contact affordance in §8.]`
+- Contact is reachable within one action from the persistent UI.
 
 #### FR-14: Content authored outside WebGL
 Long-form content (project write-ups, essays, Era summaries) is authored as HTML/MDX in the Content Truth Layer, linkable and indexable.
@@ -226,12 +241,12 @@ The data expresses relationships between items across eras, and the experience c
 - Opening a related item can reveal its forward/backward connections.
 **Notes:** `[NOTE FOR PM] Visual Relationship Lines are high-delight but complex; may ship as data + panel notes first, visual lines later. Confirm MVP inclusion in §6.`
 
-#### FR-18: Knowledge-graph ingestion pipeline *(post-MVP)*
-Source material (résumé, LinkedIn, GitHub, Medium, essays) can be processed offline to produce or enrich the Career Data Layer and its relationships.
+#### FR-18: Knowledge graph as creative authoring aid *(post-MVP, tool-agnostic)*
+An offline, **tool-agnostic** knowledge graph connects time periods and ideas to what Jarad was doing at the time, used primarily to **aid the creative authoring** of Career Data Layer content and Relationship Lines — surfacing connections a linear résumé would miss. No specific graph product is mandated; it is a means to richer, well-connected content, not a shipped feature.
 **Consequences (testable):**
-- Pipeline output conforms to the Career Data Layer schema (it is a data producer, not the renderer).
-- `[ASSUMPTION: KG pipeline is post-MVP; MVP uses a hand-authored career data file. Confirm in §6/§8.]`
-**Out of Scope:** the KG as a live, on-page rendered graph (it is a content-intelligence tool, not the portfolio renderer).
+- Its output conforms to the Career Data Layer schema (it is a data/insight producer, not the renderer).
+- It measurably surfaces cross-era connections used in authored content (e.g., through-line chains that end up as Relationship Lines / "why this matters later" notes).
+**Out of Scope:** any specific vendor/tool lock-in; the graph as a live, on-page rendered visualization (it is a content-intelligence/authoring aid, not the portfolio renderer). MVP content is hand-authored.
 
 ### 4.5 Navigation & Wayfinding
 **Description:** So visitors never feel lost in a big world: a persistent Timeline Rail to jump between eras, a HUD showing year/altitude/progress, and shareable per-era routes. Realizes UJ-1, UJ-2.
@@ -304,6 +319,37 @@ If WebGL is unavailable/blocked or the device is low-power, the experience falls
 - With WebGL disabled, the visitor gets the Static Timeline (not a blank canvas or error).
 - Fidelity Tier selection is automatic with a manual override available.
 
+### 4.8 Source-as-Exhibit (Inspectable Craft & AI-Awareness)
+**Description:** The repository is a first-class exhibit, not backstage plumbing. The code is AI-built *on purpose* and holds up to inspection: it embodies Jarad's engineering discipline and is conspicuously AI-aware — planted easter eggs for those who inspect or challenge, and embedded guidance that helps the next "team member" (human or agent). Realizes UJ-5, deepens UJ-3, and makes the §1 positioning literal. This is a **product** concern (what must be true of the artifact), while *how* Jarad works day-to-day is §16.
+
+**Functional Requirements:**
+
+#### FR-29: Public, inspection-worthy repository
+The site's source is public and its link is discoverable from the experience for anyone who wants to inspect or challenge.
+**Consequences (testable):**
+- A repository link is reachable from the persistent UI and/or an easter-egg path.
+- The repo is public, buildable, and documented enough that a stranger can understand its structure. `[ASSUMPTION: public GitHub repo; confirm.]`
+**Out of Scope:** open-sourcing for *reuse* as a template (see §5) — public for inspection, not a product.
+
+#### FR-30: Code embodies documented engineering standards
+The codebase visibly adheres to Jarad's personal style and software-engineering best practices — layered, abstracted at the right seams, modular, and documented — verifiable by inspection.
+**Consequences (testable):**
+- A conventions/standards document exists in the repo and the code demonstrably follows it.
+- Module boundaries, naming, and documentation are consistent enough that the discipline is self-evident to a senior reader.
+
+#### FR-31: Easter eggs (discoverable skill showcases)
+The source (and/or the experience) contains deliberate, discoverable easter eggs that showcase skill for those who choose to look.
+**Consequences (testable):**
+- At least one non-trivial easter egg is discoverable by an inspecting reader and is documented internally so it isn't accidentally removed.
+- Easter eggs never degrade the core experience, performance budgets (§10), or accessibility.
+
+#### FR-32: Embedded team-member guidance (agent- & human-aware)
+The repo carries passively-helpful, AI-aware guidance for whoever edits it next (agent-context files, purposeful comments, module docs) that demonstrates Jarad's AI-orchestration philosophy.
+**Consequences (testable):**
+- Agent-oriented context (e.g., an agent-guidance file) and human-oriented module docs exist and are accurate to the code.
+- The guidance measurably eases a cold-start edit (a new agent/human can locate where to make a change from the docs alone).
+**Notes:** `[NOTE FOR PM] This is where the Axioms of AI stop being décor and become demonstrated practice — the deep-space content (§4.2) and the repo should rhyme.`
+
 ## 5. Non-Goals (Explicit)
 
 - **Not a game.** Game-loop *feel*, yes; win/lose/score/levels, no.
@@ -312,7 +358,8 @@ If WebGL is unavailable/blocked or the device is low-power, the experience falls
 - **Not a bleeding-edge-baseline build.** No reliance on features not broadly supported; enhanced modes are progressive, not required. `[ASSUMPTION: WebGL-first, optional WebGPU enhancement only — from ARCHITECTURE_DRAFT.md.]`
 - **Not a CMS / blog platform.** Essays live on Medium (linked) or as MDX; the site does not become a general publishing tool.
 - **Not a reusable portfolio-builder product** for others in v1.
-- **Not an on-page live knowledge-graph visualization.** The Knowledge Graph is an offline content tool.
+- **Not an on-page live knowledge-graph visualization.** The Knowledge Graph is an offline content/authoring aid.
+- **Not an open-source product.** The repo is public *for inspection* (§4.8), not maintained as a reusable template or supported OSS project.
 
 ## 6. MVP Scope
 
@@ -349,22 +396,25 @@ If WebGL is unavailable/blocked or the device is low-power, the experience falls
 **Secondary**
 - **SM-3 — Content actions:** résumé downloads + outbound clicks (GitHub/Medium/contact) per engaged session. Validates FR-12, FR-13.
 - **SM-4 — Shareability:** referral/social shares and direct-link revisits. Validates FR-3, FR-21 (delight + deep links). Speaks to UJ-3.
+- **SM-5 — Source inspection & advocacy:** repository engagement (visits/stars/clones) and qualitative "I looked at the code and…" reactions — the signal that the Source-as-Exhibit play landed. Validates FR-29–FR-32. Speaks to UJ-5.
 
 **Counter-metrics (do not optimize)**
 - **SM-C1 — Load/performance cost:** initial load time and time-to-interactive must not regress past the §10 budgets in pursuit of spectacle. Counterbalances SM-2/SM-4. *If spectacle wins by making the site slow, it has failed.*
 - **SM-C2 — Content findability:** a visitor who skips the spectacle must still find roles, dates, tech, résumé, and contact quickly. Counterbalances SM-4. *Spectacle must never bury the truth.*
 - **SM-C3 — Accessibility integrity:** reduced-motion and keyboard/no-WebGL paths deliver full content parity. Counterbalances SM-2. *Never trade a11y for wow.*
 
-## 8. Open Questions
+## 8. Open Questions & Decisions
 
-1. **Career timeline accuracy** — confirm exact companies, roles, and date ranges (source docs show overlaps, e.g., ClassPass/SagePoint 2013–2016 vs Splash 2014–2018; Warby 2013). The Career Data Layer needs Jarad's authoritative dates.
-2. **Contact affordance** — email, LinkedIn, a form, or a "book time" link? (FR-13)
-3. **Résumé** — one general PDF, or role-tailored variants? Who maintains it and where does it live? (FR-12)
+*Items resolved this session are marked **[RESOLVED →]** with the decision; the rest stay open. Per the demo-first ethos (§16), several "open" items are meant to resolve through experimentation, not upfront.*
+
+1. **Career timeline accuracy** — **[RESOLVED → source]** the authoritative source is **`linkedin.com/in/delorenj`**. A partial fetch corrected education to **Stevens Institute of Technology** (not Drexel, as the braindump said), confirmed **IntelliForia** as current, and a "Staff Engineer & Systems Architect, 25+ years" headline. LinkedIn blocks full scraping, so exact companies/roles/dates become a **data-authoring task** in the Career Data Layer (from a LinkedIn export or hand entry) — not a blocker for the PRD.
+2. **Contact affordance** — **[RESOLVED →]** email + LinkedIn, no form in v1 (FR-13).
+3. **Résumé** — **[RESOLVED →]** authored once in **MDX**, rendered as HTML + exported to PDF from the same source (FR-12).
 4. **MVP waypoint set** — is BAE/Warby/Justworks/AI the right four to prove the magic, or swap one (e.g., include the Prologue or Splash)? (§6, FR-6)
 5. **Relationship Lines in MVP** — data-only + panel notes, or visual lines from the start? (FR-17)
 6. **Physics in MVP** — fully deferred, or a lightweight idle-drift teaser included? (FR-22–24)
-7. **Knowledge Graph** — is "Ace Knowledge Graph" a specific tool to integrate, or a generic offline enrichment step? Any constraint on it? (FR-18)
-8. **Domain & hosting** — jaradd.com? a new domain? deployment target/budget? `[NOTE FOR PM] affects SEO canonicalization and §10 targets.]`
+7. **Knowledge Graph** — **[RESOLVED →]** tool-agnostic; a generic offline **creative authoring aid** (connect eras/ideas to inform content), post-MVP, no vendor lock-in (FR-18).
+8. **Domain & hosting** — **[RESOLVED →]** canonical domain **`jaradd.com`** (reclaimed — a callback to the earlier vertical career portfolio); hosting on **Cloudflare** (Pages/Workers + **R2** for large KTX2/Draco assets), fitting Jarad's existing Cloudflare-centric infra. The exact Next.js-SSR adapter/topology is being ground-truthed by background research and is the Architecture phase's to confirm. `[NOTE FOR PM] affects SEO canonicalization and §10 targets.]`
 9. **Success targets** — set concrete numbers for SM-1 (N conversations) and confirm SM-2 threshold. (§7)
 10. **Analytics** — is engagement instrumentation (for SM-1–SM-4) in scope, and privacy-respecting/consent posture? `[ASSUMPTION: lightweight privacy-friendly analytics; confirm.]`
 11. **Audio** — BRAINDUMP.md mentions radio sounds/waveforms; is audio in scope, and must it be muted-by-default / user-initiated? (a11y + autoplay policy)
@@ -376,18 +426,17 @@ If WebGL is unavailable/blocked or the device is low-power, the experience falls
 
 ## 9. Assumptions Index
 
-*Every `[ASSUMPTION]`/inference above, surfaced for confirmation:*
+*Remaining `[ASSUMPTION]`/inferences, surfaced for confirmation (resolved items live in §8):*
 
 - §2.2 — Not intended to be reused/templatized for others in v1.
 - §4.1 (FR-5) — Target feel ≈ 3–5 wheel-notches per year, tunable.
-- §4.3 (FR-12) — Résumé is a downloadable PDF of a maintained document.
-- §4.3 (FR-13) — Contact = email/LinkedIn (pending §8 Q2).
-- §4.4 (FR-18) — KG ingestion is post-MVP; MVP data is hand-authored.
-- §5 — WebGL-first with optional WebGPU enhancement; no bleeding-edge baseline dependency.
+- §4.8 (FR-29) — the public repo is on GitHub; its link is surfaced by design.
+- §5 — WebGL2-first with optional WebGPU enhancement; no bleeding-edge baseline dependency.
 - §7 — All SM targets are proposed defaults pending Jarad's numbers.
 - §6.2 — Mobile MVP target is simplified/static, not the full world.
 - §8 Q10 — Lightweight, privacy-friendly analytics assumed in scope.
-- §10 (below) — Specific NFR numeric targets are proposed defaults, to be confirmed against the grounding-research digest and Jarad's device/hosting reality.
+- §10 — Numeric NFR targets are research-grounded proposed launch gates, to be confirmed against Jarad's device/hosting reality.
+- §13 — Hosting = Cloudflare (OpenNext on Workers + R2); domain = `jaradd.com`. Deployment topology is the Architecture phase's to ratify.
 
 ---
 
@@ -459,6 +508,8 @@ If WebGL is unavailable/blocked or the device is low-power, the experience falls
 - **Desktop web — primary:** full Spectacle Layer; the intended "wow" surface.
 - **Mobile web — adaptive:** simplified/performant experience or Static Timeline (FR-26); full content parity.
 - **Reduced-motion / no-WebGL — first-class:** Static Timeline (FR-25, FR-28).
+- **Domain:** `jaradd.com` (reclaimed — deliberate callback to Jarad's earlier vertical career portfolio).
+- **Hosting:** **Cloudflare** — Next.js via the **OpenNext adapter on Workers** (full App-Router SSR/ISR on the Node runtime; the deprecated `next-on-pages` is *not* used), with large 3D binaries (KTX2/Draco/Meshopt) served from **R2** behind a custom domain with immutable long-cache (R2's zero egress is the decisive cost win for an asset-heavy site). Three.js/R3F stays client-side to keep the server Worker bundle under its ~10 MiB gzip ceiling. Details + honest Vercel contrast in `addendum.md §N`; the Architecture phase ratifies. `[ASSUMPTION: build on Next.js 15/16 — OpenNext drops Next 14 support Q1 2026.]`
 
 ## 14. Why Now
 
@@ -482,3 +533,13 @@ Timing is genuinely load-bearing: (1) Jarad's career has arrived at an AI-era sy
 - **Metaphor reads as gimmicky (medium):** altitude=era falls flat if the affordance isn't taught early and atmosphere doesn't sell "higher = later." *Mitigation:* diegetic first-cue in 3–5s; per-era atmospheric art direction as first-class (§11).
 - **Solo maintenance / aging (medium):** immersive sites age fast; the ascent metaphor implicitly promises the site keeps growing. *Mitigation:* composable shared rendering system + data-driven era content model (§10 maintainability, §8 Q on content cadence).
 - **Never-ships polish trap (medium):** infinite worldbuilding. *Mitigation:* sequence the truth layer first (it doubles as SEO/noscript/reduced-motion/fallback), ship MVP publicly, iterate era-by-era.
+
+## 16. Ways of Working (development approach)
+
+*This is a constraint on **how** the work runs, not a product requirement — but it's load-bearing for downstream Architecture and Epics, so it's stated here.*
+
+- **Demo-first, always.** Every increment must produce something runnable and *watchable*. The experience is kept upfront and centered during development — no long infrastructure-only stretches with nothing to see. A vertical slice of the world beats a complete-but-invisible subsystem.
+- **Disposable by default.** Prototypes are spikes, not commitments. If a demo proves an idea is wrong or a lesser thrill than hoped, throw it away without ceremony. Sunk cost is not a reason to keep code. (This directly informs how epics are sized — favor throwaway spikes → stabilize, over big-bang builds.)
+- **Highly iterative / experimental.** Expect hard, fast pivots (Jarad's standing style). The Career Data Layer (FR-15), data/config-driven Scenes, and the composable rendering system (§10) exist precisely so experiments are cheap and pivots don't cascade.
+- **Experience is the acceptance test.** "Does it feel right when you scroll it?" is a first-class gate alongside functional correctness and the §10 budgets. Downstream stories should carry an experiential acceptance criterion, not only a behavioral one.
+- **Implication for downstream BMAD phases:** Architecture should favor a **walking skeleton** (thin end-to-end vertical slice: scroll → year → camera → one real scene → one real panel) over layered horizontal build-out; Epics should be sequenced so a demoable artifact exists at the end of each, and should explicitly permit throwaway spikes.

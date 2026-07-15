@@ -122,7 +122,7 @@ Do not render the whole universe at once. Chunked scenes, each lazy-loading GLTF
 
 *Source truth for Set Pieces / Tech Nodes (backs FR-6/8). Dates to be confirmed — see PRD §8 Q1.*
 
-- **Prologue — Before Launch:** internships/college/first systems exposure (Lockheed Martin, Unisys, Drexel). Dark launchpad, early machines, code notebooks, signal towers, internship badges.
+- **Prologue — Before Launch:** internships/college/first systems exposure (Lockheed Martin, Unisys, and **Stevens Institute of Technology** — LinkedIn corrects the braindump's "Drexel"). Dark launchpad, early machines, code notebooks, signal towers, internship badges. *(Exact companies/dates to be authored into the Career Data Layer from LinkedIn — full profile was auth-gated.)*
 - **2004–2010 — BAE Systems (ground):** radio hardware, antennas, oscilloscopes, spectrum analyzers, green waveforms, SCA diagrams, test benches. Tech: embedded systems, Java, J2EE, EJB, AJAX, SCA, TDD, Agile, metrics automation, design patterns. Feeling: grounded, engineered, physical.
 - **2009–2012 — Web/Agency (Noise, Firstborn) (low-atmosphere):** browser windows, Flash motion fragments, jQuery sparks, PHP panels, Symfony/MVC, Rails tracks, Backbone. Tech: Flash, PHP, Symfony, Rails, Ajax, Backbone, MVC, APIs, object recognition, AR. Feeling: kinetic, creative, high-gloss.
 - **2013 — Warby Parker (clouds):** camera grids, face landmarks, glasses overlays, calibration screens, neural-looking UI, glassy panels in cloud. Tech: computer vision, perception, ML-adjacent product, team leadership. Feeling: ascent into clouds; reality interpreted.
@@ -189,3 +189,24 @@ A content-intelligence tool, **not** the renderer. Connects companies, roles, pr
 - **Igloo Inc** — <https://igloo.inc> — journey via structural navigation over effect density (the "one defended idea / restraint" exemplar).
 - **Codrops — camera fly-through on scroll (Theatre.js + R3F)** — <https://tympanus.net/codrops/2023/02/14/animate-a-camera-fly-through-on-scroll-using-theatre-js-and-react-three-fiber/> — concrete single-timeline camera-authoring tutorial (note: add reduced-motion, which it omits).
 - **14islands/r3f-scroll-rig** — <https://github.com/14islands/r3f-scroll-rig> — production single-GlobalCanvas + scrolling-HTML pattern; the buy-vs-build reference.
+
+## N. Hosting & Deployment (from grounding research — for Architecture to ratify)
+
+*Decision: **Cloudflare** (fits Jarad's Cloudflare-centric infra). Grounded in current 2025–2026 sources (see below). The Architecture phase confirms/updates.*
+
+**Recommended topology:**
+- **App:** Next.js (App Router) deployed via **`@opennextjs/cloudflare` (OpenNext) on Cloudflare Workers** — Node runtime, so full SSR/SSG/ISR + on-demand revalidation (`revalidateTag`/`revalidatePath`, ISR cache on KV + R2). **Do NOT use `@cloudflare/next-on-pages`** — Cloudflare deprecated it (Apr 8 2025) in favor of OpenNext.
+- **Large 3D binaries** (KTX2 textures, Draco/Meshopt `.glb`, HDRIs): **Cloudflare R2** behind a **custom domain** (e.g. `assets.jaradd.com`), `Cache-Control: public, max-age=31536000, immutable`, content-hashed filenames, single-range (206) requests for progressive decode, Smart Tiered Cache. **R2 has zero egress fees** — the decisive cost win for an asset-heavy site.
+- **Keep Three.js/R3F in client components** so they compile to static JS assets, NOT into the server Worker bundle.
+
+**Hard limits to design around (the real gotchas):**
+- **Server Worker bundle ≤ ~10 MiB gzip** (paid plan; 3 MiB free) — the most-reported OpenNext pain point. Keeping 3D client-side is what keeps you under it; use the ESBuild bundle analyzer.
+- **Max single static-asset file 25 MiB** on Workers Static Assets → big 3D assets *must* live in R2, not the asset bundle.
+- Static asset file count: 20k free / 100k paid (5× bump Sept 2025). CPU: 10 ms free / up to 5 min paid (SSR is well within). 128 MB isolate memory (fine — no server-side WebGL).
+- **Build on Next.js 15/16** — OpenNext drops Next 14 support Q1 2026.
+
+**Reduced-motion at the edge (`Sec-CH-Prefers-Reduced-Motion`):** technically doable in a Worker (advertise `Accept-CH` + `Critical-CH` for retry, `Vary` for cache) to SSR a reduced-motion variant — **but Chromium-only and marked "not Baseline."** Treat it as a progressive-enhancement optimization only; the **source of truth remains CSS `@media (prefers-reduced-motion)` + `matchMedia`** (PRD §10, FR-25). Cloudflare shipped `Vary` support in Cache Rules (Jul 2 2026); whether it allowlists `Sec-CH-*` is unconfirmed — verify in-account.
+
+**Honest alternative — Vercel:** the Next.js reference platform (zero adapter risk, every feature day-one, near-zero ops) but **metered bandwidth** that gets expensive for GB-scale 3D-asset transfer. Cloudflare wins here specifically because R2 zero-egress neutralizes the dominant cost and Workers give edge-level control; choose Vercel only if adapter-risk avoidance + low ops outweigh bandwidth cost.
+
+*Key sources: OpenNext Cloudflare docs (opennext.js.org/cloudflare, /caching, /troubleshooting); Cloudflare OpenNext announcement (blog.cloudflare.com/deploying-nextjs-apps-to-cloudflare-workers-with-the-opennext-adapter); Workers limits (developers.cloudflare.com/workers/platform/limits); R2 pricing/public-buckets; MDN + web.dev on the reduced-motion client hint.*
