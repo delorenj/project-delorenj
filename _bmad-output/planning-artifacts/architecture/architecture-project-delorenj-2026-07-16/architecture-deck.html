@@ -1,0 +1,713 @@
+<style>
+  /* ============================================================
+     CAREER ASCENT — ARCHITECTURE CONSOLE
+     A mission-readout walkthrough of the architecture spine.
+     ============================================================ */
+
+  :root {
+    /* neutrals — blue-biased space ink / cool instrument paper */
+    --ink:        #0B0F1A;
+    --panel:      #121826;
+    --panel-2:    #1A2131;
+    --line:       #29323f;
+    --line-soft:  #1e2634;
+    --fg:         #E7ECF5;
+    --fg-strong:  #FBFDFF;
+    --muted:      #8B98AC;
+    --muted-2:    #63708a;
+
+    /* signal palette */
+    --accent:     #4FE6D8;   /* phosphor signal-teal (HUD trace) */
+    --accent-ink: #0B0F1A;
+    --accent-dim: #2b8f87;
+    --amber:      #F0B24A;   /* sodium telemetry */
+    --violet:     #A98BFF;   /* accessibility band */
+    --coral:      #FF6F5E;   /* critical / severity only */
+    --good:       #55D6A0;
+
+    /* altitude bands (ground -> deep space) — a real ordering scale */
+    --b-ground:   #E0A24A;
+    --b-low:      #CBB86B;
+    --b-cloud:    #86B4CC;
+    --b-strato:   #6E8FE0;
+    --b-orbit:    #4FE6D8;
+    --b-space:    #A98BFF;
+
+    --shadow: 0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px rgba(0,0,0,.75);
+    --radius: 6px;
+
+    --font-display: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", "Roboto Mono", Menlo, monospace;
+    --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: var(--font-display);
+
+    --maxw: 1160px;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --ink:        #EAEEF3;
+      --panel:      #FFFFFF;
+      --panel-2:    #F3F6FA;
+      --line:       #D3DBE4;
+      --line-soft:  #E2E8EF;
+      --fg:         #17212F;
+      --fg-strong:  #0A121D;
+      --muted:      #566072;
+      --muted-2:    #7c8698;
+      --accent:     #0E8F86;
+      --accent-ink: #FFFFFF;
+      --accent-dim: #57bdb3;
+      --amber:      #B0700F;
+      --violet:     #6B4FD0;
+      --coral:      #CE3A26;
+      --good:       #12885B;
+      --b-ground:   #C07E1E;
+      --b-low:      #97812f;
+      --b-cloud:    #3f7a97;
+      --b-strato:   #3f5fc0;
+      --b-orbit:    #0E8F86;
+      --b-space:    #6B4FD0;
+      --shadow: 0 1px 0 rgba(255,255,255,.6), 0 16px 34px -24px rgba(20,40,70,.4);
+    }
+  }
+  /* explicit toggle wins both directions */
+  :root[data-theme="dark"] {
+    --ink:#0B0F1A;--panel:#121826;--panel-2:#1A2131;--line:#29323f;--line-soft:#1e2634;
+    --fg:#E7ECF5;--fg-strong:#FBFDFF;--muted:#8B98AC;--muted-2:#63708a;
+    --accent:#4FE6D8;--accent-ink:#0B0F1A;--accent-dim:#2b8f87;--amber:#F0B24A;--violet:#A98BFF;--coral:#FF6F5E;--good:#55D6A0;
+    --b-ground:#E0A24A;--b-low:#CBB86B;--b-cloud:#86B4CC;--b-strato:#6E8FE0;--b-orbit:#4FE6D8;--b-space:#A98BFF;
+    --shadow:0 1px 0 rgba(255,255,255,.03),0 18px 40px -24px rgba(0,0,0,.75);
+  }
+  :root[data-theme="light"] {
+    --ink:#EAEEF3;--panel:#FFFFFF;--panel-2:#F3F6FA;--line:#D3DBE4;--line-soft:#E2E8EF;
+    --fg:#17212F;--fg-strong:#0A121D;--muted:#566072;--muted-2:#7c8698;
+    --accent:#0E8F86;--accent-ink:#FFFFFF;--accent-dim:#57bdb3;--amber:#B0700F;--violet:#6B4FD0;--coral:#CE3A26;--good:#12885B;
+    --b-ground:#C07E1E;--b-low:#97812f;--b-cloud:#3f7a97;--b-strato:#3f5fc0;--b-orbit:#0E8F86;--b-space:#6B4FD0;
+    --shadow:0 1px 0 rgba(255,255,255,.6),0 16px 34px -24px rgba(20,40,70,.4);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  /* faint scanline/grid atmosphere on the ground */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(1100px 600px at 80% -8%, color-mix(in oklab, var(--accent) 9%, transparent), transparent 70%),
+      radial-gradient(900px 500px at -5% 110%, color-mix(in oklab, var(--b-ground) 8%, transparent), transparent 70%);
+    opacity: .8;
+  }
+  .wrap { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 22px; }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+  /* ---- typographic system ---- */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  h1,h2,h3 { text-wrap: balance; color: var(--fg-strong); margin: 0; }
+  .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  /* ================= HEADER / NAV ================= */
+  header.top {
+    position: sticky; top: 0; z-index: 40;
+    backdrop-filter: blur(10px);
+    background: color-mix(in oklab, var(--ink) 82%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .top-inner { display: flex; align-items: center; gap: 18px; height: 56px; }
+  .brand { display: flex; align-items: baseline; gap: 10px; font-family: var(--font-mono); font-weight: 700; letter-spacing: .04em; color: var(--fg-strong); }
+  .brand .tag { color: var(--accent); }
+  .brand .v { font-size: 11px; color: var(--muted); letter-spacing: .12em; }
+  nav.sections { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
+  nav.sections a {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em;
+    color: var(--muted); padding: 6px 10px; border-radius: 4px; text-decoration: none;
+  }
+  nav.sections a:hover { color: var(--fg-strong); background: var(--panel-2); text-decoration: none; }
+  .theme-btn {
+    font-family: var(--font-mono); font-size: 12px; cursor: pointer;
+    background: var(--panel-2); color: var(--fg); border: 1px solid var(--line);
+    border-radius: 4px; padding: 6px 10px; letter-spacing: .04em;
+  }
+  .theme-btn:hover { border-color: var(--accent-dim); color: var(--fg-strong); }
+
+  /* ================= HERO ================= */
+  .hero { padding: 66px 0 40px; display: grid; grid-template-columns: 1.35fr .9fr; gap: 44px; align-items: center; }
+  .hero h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(34px, 5.4vw, 62px); line-height: .98; letter-spacing: -.01em; }
+  .hero h1 .glow { color: var(--accent); }
+  .lede { color: var(--muted); font-size: 18px; margin-top: 20px; max-width: 42ch; }
+  .lede strong { color: var(--fg); font-weight: 600; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+  .chip {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .03em;
+    border: 1px solid var(--line); background: var(--panel); color: var(--fg);
+    padding: 7px 11px; border-radius: 100px; display: inline-flex; gap: 8px; align-items: center;
+  }
+  .chip b { color: var(--accent); font-variant-numeric: tabular-nums; }
+  .chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 3px color-mix(in oklab, var(--good) 25%, transparent); }
+
+  /* altitude gauge — the ascent, as a real ordering scale */
+  .gauge { border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(180deg, color-mix(in oklab,var(--panel) 92%, var(--b-space) 8%), var(--panel)); box-shadow: var(--shadow); overflow: hidden; }
+  .gauge-h { display: flex; justify-content: space-between; align-items:center; padding: 11px 14px; border-bottom: 1px solid var(--line); }
+  .gauge-h span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .band { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 12px; padding: 9px 14px; border-bottom: 1px solid var(--line-soft); }
+  .band:last-child { border-bottom: 0; }
+  .band .swatch { width: 30px; height: 8px; border-radius: 3px; }
+  .band .bname { font-family: var(--font-mono); font-size: 12.5px; color: var(--fg); }
+  .band .era { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
+
+  /* ================= SECTIONS ================= */
+  section { padding: 48px 0; scroll-margin-top: 70px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
+  .sec-head .num { font-family: var(--font-mono); color: var(--accent); font-size: 13px; letter-spacing: .1em; }
+  .sec-head h2 { font-family: var(--font-display); font-size: clamp(21px, 3vw, 30px); font-weight: 700; letter-spacing: -.01em; }
+  .sec-sub { color: var(--muted); max-width: 66ch; margin: 12px 0 30px; }
+  .divider { height: 1px; background: linear-gradient(90deg, var(--line), transparent); border: 0; margin: 0; }
+
+  /* paradigm callout */
+  .thesis { border: 1px solid var(--line); border-left: 3px solid var(--accent); background: var(--panel); border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow); }
+  .thesis p { margin: 0; font-size: 17.5px; color: var(--fg); }
+  .thesis p .k { color: var(--accent); font-weight: 600; }
+  .thesis .sub { margin-top: 12px; color: var(--muted); font-size: 14.5px; }
+
+  /* dependency diagram */
+  .diagram-grid { display: grid; grid-template-columns: 1fr 300px; gap: 26px; margin-top: 26px; align-items: start; }
+  .diagram-box { border: 1px solid var(--line); border-radius: var(--radius); background:
+      linear-gradient(180deg, color-mix(in oklab,var(--panel) 96%, var(--accent) 4%), var(--panel));
+    box-shadow: var(--shadow); padding: 8px; }
+  svg .node rect { fill: var(--panel-2); stroke: var(--line); rx: 7; transition: stroke .18s, filter .18s; }
+  svg .node text { fill: var(--fg); font-family: var(--font-mono); font-size: 12.5px; }
+  svg .node .sub { fill: var(--muted); font-size: 10px; }
+  svg .node.truth rect { stroke: var(--b-cloud); }
+  svg .node.spec  rect { stroke: var(--b-orbit); }
+  svg .node.core  rect { stroke: var(--amber); }
+  svg .edge { stroke: var(--muted-2); stroke-width: 1.6; fill: none; marker-end: url(#arrow); transition: stroke .18s, opacity .18s; }
+  svg .edge.island { stroke: var(--accent); stroke-dasharray: 5 4; marker-end: url(#arrowA); }
+  svg.dim-mode .node:not(.active) { opacity: .3; }
+  svg.dim-mode .edge:not(.active) { opacity: .12; }
+  svg .node { cursor: pointer; }
+  .diagram-legend { display: flex; flex-direction: column; gap: 12px; }
+  .legend-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); padding: 14px 16px; }
+  .legend-card h4 { margin: 0 0 6px; font-family: var(--font-mono); font-size: 12.5px; color: var(--fg-strong); letter-spacing: .02em; }
+  .legend-card p { margin: 0; font-size: 13px; color: var(--muted); }
+  .legend-card .rulechip { display:inline-block; margin-top:8px; font-family:var(--font-mono); font-size:11px; color:var(--accent); border:1px solid var(--accent-dim); border-radius:4px; padding:2px 7px; }
+
+  /* ================= AD CARDS ================= */
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 22px; }
+  .filter-btn {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .03em; cursor: pointer;
+    background: var(--panel); color: var(--muted); border: 1px solid var(--line);
+    padding: 7px 12px; border-radius: 100px; transition: .15s;
+  }
+  .filter-btn:hover { color: var(--fg-strong); border-color: var(--accent-dim); }
+  .filter-btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+  .filter-btn .c { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; vertical-align: middle; }
+  .filters .sep { width:1px; align-self:stretch; background: var(--line); margin: 0 4px; }
+  .count { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-left: auto; }
+
+  .ad-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .ad {
+    border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel);
+    box-shadow: var(--shadow); overflow: hidden; border-left: 3px solid var(--cat, var(--accent));
+    transition: transform .12s ease, border-color .15s;
+  }
+  .ad.hidden { display: none; }
+  .ad-top { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: start; padding: 15px 16px; cursor: pointer; }
+  .ad-id { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--cat, var(--accent)); font-variant-numeric: tabular-nums; padding-top: 1px; }
+  .ad-title { font-family: var(--font-body); font-weight: 600; font-size: 15px; color: var(--fg-strong); line-height: 1.35; }
+  .ad-prevents { font-size: 12.5px; color: var(--muted); margin-top: 5px; }
+  .badge { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; padding: 3px 7px; border-radius: 4px; white-space: nowrap; text-transform: uppercase; align-self: start; }
+  .badge.adopted { color: var(--good); border: 1px solid color-mix(in oklab, var(--good) 45%, transparent); background: color-mix(in oklab, var(--good) 12%, transparent); }
+  .badge.assume  { color: var(--amber); border: 1px solid color-mix(in oklab, var(--amber) 45%, transparent); background: color-mix(in oklab, var(--amber) 12%, transparent); }
+  .ad-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--line-soft); }
+  .ad.open .ad-body { display: block; }
+  .ad.open .ad-top { padding-bottom: 12px; }
+  .ad-row { display: grid; grid-template-columns: 74px 1fr; gap: 12px; padding-top: 12px; }
+  .ad-row .lab { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); padding-top: 2px; }
+  .ad-row .val { font-size: 13.5px; color: var(--fg); }
+  .ad-row.prevents .val { color: color-mix(in oklab, var(--coral) 62%, var(--fg)); }
+  .ad-row .val code { font-family: var(--font-mono); font-size: 12px; background: var(--panel-2); padding: 1px 5px; border-radius: 3px; color: var(--accent); }
+  .expand-hint { font-family: var(--font-mono); font-size: 15px; color: var(--muted-2); transition: transform .18s; }
+  .ad.open .expand-hint { transform: rotate(45deg); color: var(--accent); }
+
+  /* ================= STACK TABLE ================= */
+  .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--panel); }
+  thead th { text-align: left; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 12px 16px; border-bottom: 1px solid var(--line); font-weight: 600; }
+  tbody td { padding: 11px 16px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.name { font-family: var(--font-mono); color: var(--fg-strong); }
+  td.ver { font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--accent); white-space: nowrap; }
+  td.note { color: var(--muted); font-size: 12.5px; }
+  .pill { font-family: var(--font-mono); font-size: 10px; padding: 2px 6px; border-radius: 4px; letter-spacing: .04em; }
+  .pill.ok { color: var(--good); border: 1px solid color-mix(in oklab,var(--good) 40%, transparent); }
+  .pill.watch { color: var(--amber); border: 1px solid color-mix(in oklab,var(--amber) 40%, transparent); }
+
+  /* ================= DEFERRED ================= */
+  .defer-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+  .defer { border: 1px dashed var(--line); border-radius: var(--radius); padding: 15px 17px; background: color-mix(in oklab, var(--panel) 60%, transparent); }
+  .defer h4 { margin: 0 0 6px; font-size: 14px; color: var(--fg-strong); font-family: var(--font-body); }
+  .defer .q { font-family: var(--font-mono); font-size: 11px; color: var(--amber); }
+  .defer p { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+
+  /* ================= SYSTEMS CHECK ================= */
+  .check-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .check { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); padding: 15px; box-shadow: var(--shadow); }
+  .check .lens { font-family: var(--font-mono); font-size: 12px; color: var(--fg-strong); letter-spacing: .02em; }
+  .check .verdict { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .06em; margin-top: 10px; padding: 4px 8px; border-radius: 4px; display: inline-block; text-transform: uppercase; }
+  .verdict.pass { color: var(--good); border: 1px solid color-mix(in oklab,var(--good) 40%, transparent); }
+  .verdict.concern { color: var(--amber); border: 1px solid color-mix(in oklab,var(--amber) 40%, transparent); }
+  .verdict.work { color: var(--coral); border: 1px solid color-mix(in oklab,var(--coral) 45%, transparent); }
+  .check p { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); }
+  .resolved { border: 1px solid var(--line); border-left: 3px solid var(--good); border-radius: var(--radius); background: var(--panel); padding: 18px 20px; }
+  .resolved h4 { margin: 0 0 10px; font-family: var(--font-mono); font-size: 13px; color: var(--fg-strong); }
+  .resolved ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13.5px; }
+  .resolved ul li { margin: 5px 0; }
+  .resolved ul li b { color: var(--fg); }
+  .resolved code { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+
+  /* ================= FOOTER ================= */
+  footer { border-top: 1px solid var(--line); margin-top: 30px; padding: 30px 0 60px; color: var(--muted); font-size: 13px; }
+  footer .paths { font-family: var(--font-mono); font-size: 12px; margin-top: 10px; color: var(--muted-2); }
+  footer .paths span { color: var(--accent); }
+
+  /* reveal-on-load ascent, disabled for reduced-motion */
+  .reveal { opacity: 0; transform: translateY(14px); }
+  .reveal.in { opacity: 1; transform: none; transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .reveal.in { opacity: 1 !important; transform: none !important; transition: none !important; }
+    * { scroll-behavior: auto !important; }
+  }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; gap: 30px; padding-top: 40px; }
+    .diagram-grid { grid-template-columns: 1fr; }
+    .ad-grid, .defer-grid { grid-template-columns: 1fr; }
+    .check-grid { grid-template-columns: repeat(2,1fr); }
+    nav.sections { display: none; }
+  }
+</style>
+
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="brand">CAREER&nbsp;ASCENT<span class="tag">// spine</span><span class="v">v1 · 2026-07-16</span></div>
+    <nav class="sections" aria-label="Sections">
+      <a href="#paradigm">paradigm</a>
+      <a href="#rules">flight&nbsp;rules</a>
+      <a href="#stack">stack</a>
+      <a href="#deferred">deferred</a>
+      <a href="#check">systems&nbsp;check</a>
+    </nav>
+    <button class="theme-btn" id="themeBtn" aria-label="Toggle colour theme">◐ theme</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ HERO ============ -->
+  <div class="hero">
+    <div class="reveal">
+      <div class="eyebrow">Architecture Spine · Build Substrate · Feature Altitude</div>
+      <h1>Nineteen flight&nbsp;rules for a <span class="glow">career you scroll through</span>.</h1>
+      <p class="lede">A cinematic scroll-driven portfolio that ascends from the <strong>ground</strong> (radio-era signals) to <strong>deep space</strong> (agentic AI). This spine fixes only the invariants that keep independently-built eras, scenes, panels, and routes from diverging — everything else is left to the code.</p>
+      <div class="meta-row">
+        <span class="chip"><span class="dot"></span> Gate&nbsp;passed</span>
+        <span class="chip">Decisions <b>19</b> · adopted <b>17</b></span>
+        <span class="chip">Governs <b>FR-1…35</b> + §10&nbsp;NFRs</span>
+        <span class="chip">Next 16 · R3F&nbsp;9 · Cloudflare</span>
+      </div>
+    </div>
+
+    <div class="gauge reveal" aria-label="Altitude bands, ground to deep space">
+      <div class="gauge-h"><span>Altitude bands</span><span>time →</span></div>
+      <div class="band"><span class="swatch" style="background:var(--b-space)"></span><span class="bname">deep-space</span><span class="era">Axioms of AI</span></div>
+      <div class="band"><span class="swatch" style="background:var(--b-orbit)"></span><span class="bname">orbit</span><span class="era">ACD / IntelliForia</span></div>
+      <div class="band"><span class="swatch" style="background:var(--b-strato)"></span><span class="bname">stratosphere</span><span class="era">Justworks</span></div>
+      <div class="band"><span class="swatch" style="background:var(--b-cloud)"></span><span class="bname">clouds</span><span class="era">Warby · ClassPass · Splash</span></div>
+      <div class="band"><span class="swatch" style="background:var(--b-low)"></span><span class="bname">low-atmosphere</span><span class="era">Web / Agency</span></div>
+      <div class="band"><span class="swatch" style="background:var(--b-ground)"></span><span class="bname">ground</span><span class="era">Prologue · BAE Systems</span></div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ============ PARADIGM ============ -->
+  <section id="paradigm">
+    <div class="sec-head"><span class="num">01</span><h2>The paradigm</h2></div>
+    <p class="sec-sub">One named model that loads a whole structure for free — and the single-authority rules that keep two co-equal layers from fighting over the same job.</p>
+
+    <div class="thesis reveal">
+      <p><span class="k">Layered progressive-enhancement over a single-source-of-truth data core</span>, with a <span class="k">single-authority runtime</span>. One Career Data Layer projects into many surfaces — the SSR'd DOM truth layer, the WebGL spectacle, the static timeline, the routes, the JSON-LD. The DOM projection <em>is the truth</em>; WebGL is a leaf enhancement mounted on top of it and never depended upon by it.</p>
+      <p class="sub">At runtime, every concern two scenes could each try to own — scroll, the animation loop, the camera, per-frame state, the sequence→distance mapping, history, panels, quality — has exactly <strong>one</strong> authority.</p>
+    </div>
+
+    <div class="diagram-grid">
+      <div class="diagram-box reveal">
+        <svg viewBox="0 0 640 340" role="img" aria-label="Dependency diagram: Content Truth Layer and Spectacle Layer both depend on the Career Data Layer, shared config, and store; only the truth layer mounts the spectacle island, one-way." id="depSvg">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--muted-2)"></path>
+            </marker>
+            <marker id="arrowA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"></path>
+            </marker>
+          </defs>
+
+          <!-- edges (drawn first, under nodes) -->
+          <path class="edge" data-e="truth" d="M175,86 C175,150 150,150 150,196"></path>
+          <path class="edge" data-e="truth" d="M205,86 C260,140 300,150 330,196"></path>
+          <path class="edge" data-e="truth" d="M150,64 C300,64 470,70 505,196"></path>
+          <path class="edge" data-e="spec"  d="M470,120 C440,150 380,165 360,196"></path>
+          <path class="edge" data-e="spec"  d="M490,120 C500,150 510,165 520,196"></path>
+          <path class="edge" data-e="spec"  d="M520,120 C560,150 585,165 590,196" transform="translate(-40,0)"></path>
+          <path class="edge" data-e="spec"  d="M455,110 C300,120 200,150 180,196"></path>
+          <path class="edge island" data-e="island" d="M245,54 C340,54 400,60 452,88"></path>
+
+          <!-- nodes -->
+          <g class="node truth active" data-n="truth" data-e="truth">
+            <rect x="95" y="30" width="150" height="56" rx="7"></rect>
+            <text x="170" y="55" text-anchor="middle">truth/ + app/</text>
+            <text x="170" y="72" text-anchor="middle" class="sub">SSR DOM · routes · SEO</text>
+          </g>
+          <g class="node spec" data-n="spec" data-e="spec island">
+            <rect x="430" y="64" width="150" height="56" rx="7"></rect>
+            <text x="505" y="89" text-anchor="middle">spectacle/</text>
+            <text x="505" y="106" text-anchor="middle" class="sub">WebGL island</text>
+          </g>
+          <g class="node core" data-n="core">
+            <rect x="75" y="196" width="150" height="60" rx="7"></rect>
+            <text x="150" y="220" text-anchor="middle">data/</text>
+            <text x="150" y="237" text-anchor="middle" class="sub">Career Data Layer (SSOT)</text>
+          </g>
+          <g class="node core" data-n="cfg">
+            <rect x="270" y="196" width="150" height="60" rx="7"></rect>
+            <text x="345" y="220" text-anchor="middle">sequence.config</text>
+            <text x="345" y="237" text-anchor="middle" class="sub">DOM + world offsets</text>
+          </g>
+          <g class="node core" data-n="store">
+            <rect x="450" y="196" width="150" height="60" rx="7"></rect>
+            <text x="525" y="220" text-anchor="middle">state/ · scroll/</text>
+            <text x="525" y="237" text-anchor="middle" class="sub">store · one RAF loop</text>
+          </g>
+          <text x="320" y="300" text-anchor="middle" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">arrows = the only permitted import directions · nothing imports spectacle/ statically</text>
+          <text x="320" y="320" text-anchor="middle" fill="var(--accent)" font-family="var(--font-mono)" font-size="11">— · — · —  dashed = the one-way ssr:false island mount boundary</text>
+        </svg>
+      </div>
+      <div class="diagram-legend">
+        <div class="legend-card reveal">
+          <h4>The truth layer stands alone</h4>
+          <p><code style="font-family:var(--font-mono);font-size:12px;color:var(--accent)">truth/</code> must build and render fully with <code style="font-family:var(--font-mono);font-size:12px;color:var(--accent)">spectacle/</code> absent. Résumé, dates, links, SEO — all present before the canvas exists.</p>
+          <span class="rulechip">AD-2 · AD-10</span>
+        </div>
+        <div class="legend-card reveal">
+          <h4>One data core feeds everything</h4>
+          <p>The rail, a panel, a route, and the SEO fallback can never disagree about an era's band, dates, or tech — there is one canonical record, keyed by slug.</p>
+          <span class="rulechip">AD-1 · AD-6 · AD-8</span>
+        </div>
+        <div class="legend-card reveal">
+          <h4>Hover a node</h4>
+          <p>Trace what each layer is allowed to depend on. The spectacle layer is a leaf — it reads data, config, and state, and is reached only through the mount boundary.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ============ FLIGHT RULES / ADs ============ -->
+  <section id="rules">
+    <div class="sec-head"><span class="num">02</span><h2>Flight rules</h2></div>
+    <p class="sec-sub">Every decision a future builder — human or agent — can't read off compliant code. Each carries what it <em>binds</em>, the <em>divergence</em> it prevents, and an enforceable <em>rule</em>. Filter by concern; click any card to open it.</p>
+
+    <div class="filters" id="filters">
+      <button class="filter-btn" data-filter="all" aria-pressed="true">All</button>
+      <button class="filter-btn" data-filter="truth" aria-pressed="false"><span class="c" style="background:var(--b-cloud)"></span>Truth &amp; Data</button>
+      <button class="filter-btn" data-filter="runtime" aria-pressed="false"><span class="c" style="background:var(--b-orbit)"></span>Runtime &amp; Motion</button>
+      <button class="filter-btn" data-filter="render" aria-pressed="false"><span class="c" style="background:var(--amber)"></span>Rendering &amp; Perf</button>
+      <button class="filter-btn" data-filter="a11y" aria-pressed="false"><span class="c" style="background:var(--violet)"></span>Accessibility</button>
+      <button class="filter-btn" data-filter="platform" aria-pressed="false"><span class="c" style="background:var(--b-strato)"></span>Platform &amp; Exhibit</button>
+      <span class="sep"></span>
+      <button class="filter-btn" data-toggle="assume" aria-pressed="false">⚑ Assumptions only</button>
+      <span class="count" id="count"></span>
+    </div>
+
+    <div class="ad-grid" id="adGrid"><!-- cards injected --></div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ============ STACK ============ -->
+  <section id="stack">
+    <div class="sec-head"><span class="num">03</span><h2>Stack readout</h2></div>
+    <p class="sec-sub">Cold-start seed, verified current on 2026-07-16. The code owns these once it exists — this is the starting pin, not a mirror to maintain.</p>
+    <div class="table-scroll reveal">
+      <table>
+        <thead><tr><th>Component</th><th>Version</th><th>Status</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td class="name">Next.js (App Router)</td><td class="ver">16.2.x</td><td><span class="pill ok">current</span></td><td class="note">SSR/ISR truth layer; Node runtime on Workers</td></tr>
+          <tr><td class="name">React</td><td class="ver">19.x</td><td><span class="pill ok">current</span></td><td class="note">interlocks with R3F v9</td></tr>
+          <tr><td class="name">@opennextjs/cloudflare</td><td class="ver">1.20.x</td><td><span class="pill ok">current</span></td><td class="note">full Next 16 support · next-on-pages is deprecated</td></tr>
+          <tr><td class="name">three</td><td class="ver">0.185.x</td><td><span class="pill ok">current</span></td><td class="note">WebGL2 baseline; WebGPU path deferred</td></tr>
+          <tr><td class="name">@react-three/fiber</td><td class="ver">9.6.x</td><td><span class="pill ok">current</span></td><td class="note">pairs with React 19</td></tr>
+          <tr><td class="name">@react-three/drei</td><td class="ver">10.7.x</td><td><span class="pill ok">current</span></td><td class="note">canvas/tunnel primitives</td></tr>
+          <tr><td class="name">gsap + ScrollTrigger</td><td class="ver">3.13.x</td><td><span class="pill ok">free</span></td><td class="note">100% free incl. all plugins since Apr 2025</td></tr>
+          <tr><td class="name">lenis (lenis/react)</td><td class="ver">1.3.x</td><td><span class="pill ok">current</span></td><td class="note">single scroll authority, autoRaf:false</td></tr>
+          <tr><td class="name">zustand</td><td class="ver">5.x</td><td><span class="pill ok">current</span></td><td class="note">one store; per-frame via getState()</td></tr>
+          <tr><td class="name">@react-three/rapier</td><td class="ver">2.2.x</td><td><span class="pill watch">post-MVP</span></td><td class="note">R3F v9 line; re-verify at build time</td></tr>
+          <tr><td class="name">@pmndrs/detect-gpu</td><td class="ver">latest</td><td><span class="pill watch">pin+spike</span></td><td class="note">benchmark corpus froze Dec 2025 → runtime monitor mitigates</td></tr>
+          <tr><td class="name">@react-three/postprocessing</td><td class="ver">latest</td><td><span class="pill watch">pin+spike</span></td><td class="note">validate Godrays/Lensflare/FXAA on React 19</td></tr>
+          <tr><td class="name">Hosting</td><td class="ver">CF Workers</td><td><span class="pill ok">chosen</span></td><td class="note">OpenNext + R2 (zero-egress assets) + KV · jaradd.com</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ============ DEFERRED ============ -->
+  <section id="deferred">
+    <div class="sec-head"><span class="num">04</span><h2>Deferred by design</h2></div>
+    <p class="sec-sub">The other half of the contract. Each is pushed down with the reason it can wait — and, where a real fork stays open, the invariant that already fences it.</p>
+    <div class="defer-grid">
+      <div class="defer reveal"><span class="q">§8 Q16</span><h4>WebGPU at launch</h4><p>WebGL2-only baseline, no WebGPU-only paths. Revisit compute-particle paths post-telemetry.</p></div>
+      <div class="defer reveal"><span class="q">§8 Q15</span><h4>Buy-vs-build the scroll rig</h4><p>Topology is fixed (AD-3/AD-4); the implementation is open. Lean hand-roll with drei primitives — <code style="font-family:var(--font-mono);font-size:11.5px;color:var(--accent)">r3f-scroll-rig</code> 8.15.0 is stale, React-19 unverified. Resolve behind a spike.</p></div>
+      <div class="defer reveal"><span class="q">FR-18</span><h4>Knowledge-graph ingestion</h4><p>Post-MVP, offline, tool-agnostic authoring aid. Output must conform to the Career Data Layer schema — a producer, never a renderer.</p></div>
+      <div class="defer reveal"><span class="q">FR-22–24</span><h4>Full physics build</h4><p>Phase 3 / post-MVP; the scope invariant is pre-committed in AD-14. An MVP idle-drift teaser is a PM call.</p></div>
+      <div class="defer reveal"><span class="q">FR-17</span><h4>Visual relationship lines</h4><p>MVP ships data + "why this matters later" panel notes; rendered lines post-MVP.</p></div>
+      <div class="defer reveal"><span class="q">§8 Q11 · ⚑</span><h4>Audio</h4><p><em>Assumption:</em> muted-by-default, user-initiated, out of MVP. Autoplay/a11y policy needs a call.</p></div>
+      <div class="defer reveal"><span class="q">§8 Q10</span><h4>Analytics vendor &amp; RUM</h4><p>Event <em>schema</em> is fixed (AD-19); the privacy-first vendor, field-CWV/RUM, error tracking, and rollback are bound together later.</p></div>
+      <div class="defer reveal"><span class="q">§8 Q12 · ⚑</span><h4>Per-era fidelity</h4><p><em>Assumption:</em> full 3D for the two signature bookends (ground BAE, orbit→deep-space AI); lighter treatments for transitional eras. Tuned in spikes.</p></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ============ SYSTEMS CHECK ============ -->
+  <section id="check">
+    <div class="sec-head"><span class="num">05</span><h2>Systems check</h2></div>
+    <p class="sec-sub">Before handoff, four independent reviewers attacked the spine in parallel — including an adversary tasked with building two units that obey every rule yet still diverge. Every hole they found is now closed.</p>
+
+    <div class="check-grid">
+      <div class="check reveal"><div class="lens">Version currency</div><div class="verdict concern">pass · concerns</div><p>All pins current; both staleness flags confirmed against sources.</p></div>
+      <div class="check reveal"><div class="lens">Good-spine rubric</div><div class="verdict concern">pass · concerns</div><p>Paradigm, seed, and deferrals sound; a11y ownership flagged.</p></div>
+      <div class="check reveal"><div class="lens">Input reconcile</div><div class="verdict work">needs work</div><p>Full-motion a11y cluster was silently dropped.</p></div>
+      <div class="check reveal"><div class="lens">Adversarial</div><div class="verdict work">needs work</div><p>12 divergence holes constructed, each with a proof.</p></div>
+    </div>
+
+    <div class="resolved reveal">
+      <h4>▸ Holes found → fixes applied</h4>
+      <ul>
+        <li><b>Accessibility had no owning rule.</b> Flash-safety (PEAT), keyboard/never-raycast-only, focus-ring contrast, SR live-region — added as <code>AD-16</code>, plus an axe+PEAT CI gate.</li>
+        <li><b>Two record types could each store an era's band + years.</b> <code>AD-1</code> tightened: one canonical Era keyed by slug owns band/years; everything else references it.</li>
+        <li><b>Scroll, routing, and the router all wrote history.</b> New <code>AD-18</code> names a single navigation authority; route→placement is one-way.</li>
+        <li><b>Panels &amp; the primary metric had no single owner.</b> <code>AD-17</code> (one panel/focus controller) and <code>AD-19</code> (one analytics schema, so scroll-vs-jump arrival stays computable).</li>
+        <li><b>Fallback taxonomy &amp; quality-monitor ownership were fuzzy.</b> <code>AD-14</code> pins the adjacent-era window + failure classes; <code>AD-13</code> owns the one runtime monitor; <code>AD-9</code> made surface selection deterministic.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <div>Companion to the PRD “Career Ascent — Jarad DeLorenzo Portfolio World.” Generated from the architecture spine and its decision log.</div>
+    <div class="paths">spine → <span>ARCHITECTURE-SPINE.md</span> &nbsp;·&nbsp; log → <span>.memlog.md</span> &nbsp;·&nbsp; reviews → <span>reviews/</span></div>
+  </footer>
+</div>
+
+<script>
+  // ---- theme toggle (respects OS until user overrides) ----
+  var root = document.documentElement, tbtn = document.getElementById('themeBtn');
+  tbtn.addEventListener('click', function () {
+    var cur = root.getAttribute('data-theme');
+    if (!cur) cur = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+  });
+
+  // ---- AD data ----
+  var ADS = [
+    {id:'AD-1', cat:'truth', c:'--b-cloud', adopted:1, t:'Career Data Layer is the single source of truth',
+      binds:'FR-15/16/17 · all surfaces',
+      prevents:'The rail, a panel, a route, and the SEO fallback each carrying a different date, title, or tech for the same era — including the typed divergence where two record types each legally store the same fact.',
+      rule:'Every era, waypoint, tech node, date and link defined once under data/career/. One canonical Era record, keyed by slug, owns band and years; every other type references the Era by slug and never restates them.'},
+    {id:'AD-2', cat:'truth', c:'--b-cloud', adopted:1, t:'DOM is the truth; WebGL is an ssr:false island on top',
+      binds:'FR-10/14 · §10 SEO/CWV',
+      prevents:'Primary content trapped in WebGL textures (SEO + a11y collapse); the canvas becoming the LCP element.',
+      rule:'All primary text exists in server-rendered HTML before hydration and before the canvas mounts. The spectacle is one next/dynamic ssr:false island behind a poster. The LCP element is SSR text — never the canvas.'},
+    {id:'AD-8', cat:'truth', c:'--b-cloud', adopted:1, t:'The world axis is the Career Sequence, not the calendar year',
+      binds:'FR-1/5/6 · glossary',
+      prevents:'Overlapping tenures producing a non-single-valued year→distance function and colliding altitudes.',
+      rule:'The world lays out along a monotonic Career Sequence of non-overlapping segments; year is a derived, non-decreasing label. The Primary Track is single-valued at every position; concurrent roles co-locate as artifacts. Bands are non-decreasing.'},
+    {id:'AD-6', cat:'truth', c:'--b-cloud', adopted:1, t:'One shared sequence config drives both DOM heights and world offsets',
+      binds:'FR-1/5/6 · §10 CLS',
+      prevents:'DOM section heights and 3D waypoint offsets being tuned separately and drifting apart (desync + layout shift).',
+      rule:'The Sequence-to-Distance Mapping in data/sequence.config.ts is the single origin for both DOM section heights and world waypoint offsets; both are derived from it, neither authored independently.'},
+    {id:'AD-19', cat:'truth', c:'--b-cloud', adopted:1, t:'Single analytics event schema authority',
+      binds:'FR-34 · SM-2…5',
+      prevents:'World, rail and static timeline emitting the same metric under divergent names — making the primary metric SM-2 uncomputable.',
+      rule:'One typed event registry and one track() are the only way any surface emits analytics; events are slug-keyed. Scroll-traversal arrival and jump arrival are two distinct named events. Honors DNT/GPC.'},
+
+    {id:'AD-4', cat:'runtime', c:'--b-orbit', adopted:1, t:'Single scroll authority + single RAF loop',
+      binds:'FR-1/2 · §10 performance',
+      prevents:'Two competing RAF loops and two scroll owners producing DOM↔WebGL jitter; a drei ScrollControls overlay breaking the SSR truth layer.',
+      rule:'GSAP ScrollTrigger on the real (Lenis) document is the only scroll authority. Lenis runs autoRaf:false, driven from gsap.ticker; the canvas is frameloop="demand" with explicit invalidate() during scroll/tween/physics.'},
+    {id:'AD-5', cat:'runtime', c:'--b-orbit', adopted:1, t:'Never setState in the frame or scroll loop',
+      binds:'all scenes · §10 performance',
+      prevents:'Independently-built scenes each routing 60fps updates through React’s scheduler — the #1 R3F performance failure.',
+      rule:'Per-frame values live in refs or are read via store.getState() inside useFrame; never setState in useFrame or scroll callbacks. React re-render is reserved for discrete UI state only (activeEra, qualityTier, reducedMotion, panel).'},
+    {id:'AD-7', cat:'runtime', c:'--b-orbit', adopted:0, t:'One scrubbable camera timeline; code-authored GSAP is the authority',
+      binds:'FR-1/2/3/4/21',
+      prevents:'Free-scroll motion and click-to-launch tweens diverging into two camera systems that fight for control.',
+      rule:'The whole ground→deep-space journey is one timeline. Free-scroll maps scrollProgress→timeline position; waypoint-jump tweens the same playhead, never hijacking scroll. Assumption: Theatre.js is at most an optional dev-only aid baked to state.json, never a runtime dependency.'},
+    {id:'AD-18', cat:'runtime', c:'--b-orbit', adopted:1, t:'Single navigation / history authority',
+      binds:'FR-3/19/21 · reconciles AD-4↔AD-11',
+      prevents:'The scroll authority, the rail, and the Next router each writing history and racing — replaceState clobbering a pushState, or raw History desyncing the router.',
+      rule:'All URL/history writes go through one navigation module on the Next router; scroll-settle and selections both call it. Scenes never call history.* directly. Route→placement is one-way.'},
+
+    {id:'AD-3', cat:'render', c:'--amber', adopted:1, t:'Exactly one persistent GlobalCanvas; switch scenes by visibility',
+      binds:'FR-6/7 · §10 resilience',
+      prevents:'WebGL-context exhaustion (browsers cap ~8–16 and kill the oldest) and material-recompile hitches at era transitions.',
+      rule:'One canvas fixed behind the scrolling document for the whole site — never per-section. Scene-graph nodes stay mounted; switch active scenes via the visible prop, never conditional mount/unmount at runtime.'},
+    {id:'AD-13', cat:'render', c:'--amber', adopted:1, t:'Performance budget is a checked-in CI gate; one runtime monitor',
+      binds:'FR-30 · §10 budgets · SM-C1',
+      prevents:'Each scene individually fine but the resident sum silently blowing draw-call/triangle/texture/bundle budgets while CI stays green; two competing quality-downgrade owners.',
+      rule:'data/perf-budget.json is the single origin of budgets, asserted against the resident-window sum. AD-13 owns the one runtime monitor (PerformanceMonitor + hysteresis; auto-downgrade one tier if avg FPS<40 for >2s). Instancing for all repeated nodes.'},
+    {id:'AD-14', cat:'render', c:'--amber', adopted:1, t:'Scene contract: data-driven, composable, fallback-bounded, anachronism-free',
+      binds:'FR-6/7/8/9/33 · 22–24',
+      prevents:'N bespoke per-era pipelines a solo builder can’t maintain; a jumped-to era blanking the canvas; anachronistic set pieces; unbounded GPU memory growth.',
+      rule:'Every era → ≥1 data-driven scene chunk from shared composable modules. The adjacent-era window is defined once in order units; one residency authority disposes GPU memory. Failure taxonomy is pinned: per-scene faults → degraded fallback (isolated); only Tier 0 / no-WebGL2 / context-lost → the coarse static-timeline path.'},
+
+    {id:'AD-9', cat:'a11y', c:'--violet', adopted:1, t:'Reduced-Motion & Fidelity Tier are orthogonal, degrade-to-truth modes',
+      binds:'FR-25/26/28/33 · §10',
+      prevents:'A11y treated as "animations off" bolted on late; ambiguity over whether the canvas even mounts.',
+      rule:'Spectacle is off by default in code; a single motion flag gates all camera/parallax/physics. Deterministic surface selection: reduced-motion OR Tier 0 OR no-WebGL2 OR context-lost ⇒ no canvas, the static timeline is the surface. Runtime downgrade is owned by AD-13.'},
+    {id:'AD-10', cat:'a11y', c:'--violet', adopted:1, t:'The Static Timeline is one component serving four jobs',
+      binds:'FR-25/28 · §10 SEO',
+      prevents:'Four divergent fallback implementations (SEO body, noscript, reduced-motion, capability fallback) drifting out of parity with the world.',
+      rule:'A single SSR’d Static Timeline artifact is the SEO body, the noscript mirror, Reduced-Motion Mode, and the low-end/context-lost fallback. It exposes every era, panel, résumé and link the world does. Not a separate "lite" page.'},
+    {id:'AD-16', cat:'a11y', c:'--violet', adopted:1, t:'Accessibility is a first-class launch invariant, not a mode',
+      binds:'FR-27 · §10 a11y · §6.1 gate',
+      prevents:'Independently-built scenes each rolling their own (or no) keyboard/semantics/contrast handling; a11y treated as covered by reduced-motion alone.',
+      rule:'Every era is a real focusable button/link firing the same nav as a click — never raycast-only. Flash-safety (PEAT) is a hard gate even in full motion. Focus ring ≥3:1 on both bright-cloud and deep-space backdrops; persistent text ≥4.5:1 worst-case; era/year in a polite live region. CI runs axe + the PEAT flash check.'},
+    {id:'AD-17', cat:'a11y', c:'--violet', adopted:1, t:'One Detail-Panel & focus controller',
+      binds:'FR-11/23/27',
+      prevents:'Two panels open at once; a 3D-artifact selection rolling its own handler that can’t restore focus to the trigger; world and static timeline opening panels differently.',
+      rule:'A single activePanel slice and one controller own opening/closing; at most one panel open. Opening moves focus in, closing restores it to the trigger. A selected 3D artifact calls this controller — never its own focus handling.'},
+
+    {id:'AD-11', cat:'platform', c:'--b-strato', adopted:1, t:'Real per-era routes; deep-link cold-load places, never launches',
+      binds:'FR-21 · §10 SEO',
+      prevents:'Hash routing that starves SEO; a deep link replaying the from-ground launch (delaying LCP); ambiguous Back / 404 as the site pivots.',
+      rule:'Every era is a real History-API route with its own SSR title/meta/canonical/JSON-LD + OG card. Cold-load places the camera with the panel open; only in-session selection launches. History writes go through AD-18. Unknown slug → graceful 404 into the static timeline; old slugs aliased.'},
+    {id:'AD-12', cat:'platform', c:'--b-strato', adopted:1, t:'Cloudflare client/server split; 3D binaries in R2',
+      binds:'§10 · §13 platform',
+      prevents:'R3F/Three pulled into the server Worker bundle and blowing the ~10 MiB gzip limit; asset-heavy egress cost.',
+      rule:'R3F/Three are client components only, compiled to static JS assets — never in the server Worker bundle. Large 3D binaries live in R2 behind assets.jaradd.com, content-hashed, immutable, single-range. App via @opennextjs/cloudflare on Workers; next-on-pages is not used.'},
+    {id:'AD-15', cat:'platform', c:'--b-strato', adopted:0, t:'Source-as-Exhibit gates: the repo is a checkable exhibit',
+      binds:'FR-29/30/31/32/35 · UJ-5',
+      prevents:'The "directed AI to my standard" claim resting on "you can tell"; one leaked secret inverting the credibility signal; easter eggs silently deleted.',
+      rule:'CONVENTIONS.md enforced by CI import-boundary rules; gitleaks secret-scan as a hard publish gate (history verified clean); AGENTS.md/CLAUDE.md + module docs passing a cold-start test; ≥1 source-resident easter egg guarded by CI; a published build case study. Assumption: a source-available "look, don’t reuse" license — confirm flavor.'}
+  ];
+
+  var CATL = {truth:'Truth & Data', runtime:'Runtime & Motion', render:'Rendering & Perf', a11y:'Accessibility', platform:'Platform & Exhibit'};
+  var grid = document.getElementById('adGrid');
+  ADS.forEach(function (a) {
+    var el = document.createElement('div');
+    el.className = 'ad'; el.setAttribute('data-cat', a.cat); el.setAttribute('data-adopted', a.adopted);
+    el.style.setProperty('--cat', 'var(' + a.c + ')');
+    el.innerHTML =
+      '<div class="ad-top" role="button" tabindex="0" aria-expanded="false">' +
+        '<div class="ad-id">' + a.id + '</div>' +
+        '<div><div class="ad-title">' + a.t + '</div><div class="ad-prevents">Prevents: ' + firstClause(a.prevents) + '</div></div>' +
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">' +
+          '<span class="badge ' + (a.adopted ? 'adopted' : 'assume') + '">' + (a.adopted ? 'adopted' : '⚑ assumption') + '</span>' +
+          '<span class="expand-hint">+</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="ad-body">' +
+        row('Concern', CATL[a.cat]) +
+        row('Binds', a.binds) +
+        '<div class="ad-row prevents"><div class="lab">Prevents</div><div class="val">' + a.prevents + '</div></div>' +
+        row('Rule', a.rule) +
+      '</div>';
+    grid.appendChild(el);
+    var top = el.querySelector('.ad-top');
+    function toggle(){ el.classList.toggle('open'); top.setAttribute('aria-expanded', el.classList.contains('open')); }
+    top.addEventListener('click', toggle);
+    top.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }});
+  });
+  function row(l,v){ return '<div class="ad-row"><div class="lab">'+l+'</div><div class="val">'+v+'</div></div>'; }
+  function firstClause(s){ var i = s.indexOf(';'); return (i>0? s.slice(0,i) : s.slice(0, 92)) + (s.length>92 && i<0 ? '…' : ''); }
+
+  // ---- filtering ----
+  var filterCat = 'all', assumeOnly = false;
+  var fbtns = Array.prototype.slice.call(document.querySelectorAll('.filter-btn'));
+  var countEl = document.getElementById('count');
+  function apply() {
+    var shown = 0;
+    Array.prototype.forEach.call(grid.children, function (el) {
+      var okCat = filterCat === 'all' || el.getAttribute('data-cat') === filterCat;
+      var okAss = !assumeOnly || el.getAttribute('data-adopted') === '0';
+      var vis = okCat && okAss;
+      el.classList.toggle('hidden', !vis);
+      if (vis) shown++;
+    });
+    countEl.textContent = shown + ' / ' + ADS.length + ' rules';
+  }
+  fbtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (b.hasAttribute('data-toggle')) {
+        assumeOnly = !assumeOnly; b.setAttribute('aria-pressed', assumeOnly);
+      } else {
+        filterCat = b.getAttribute('data-filter');
+        fbtns.forEach(function (x) { if (!x.hasAttribute('data-toggle')) x.setAttribute('aria-pressed', x === b); });
+      }
+      apply();
+    });
+  });
+  apply();
+
+  // ---- dependency diagram hover ----
+  var svg = document.getElementById('depSvg');
+  var nodes = svg.querySelectorAll('.node'), edges = svg.querySelectorAll('.edge');
+  svg.querySelectorAll('.node').forEach(function (n) {
+    n.addEventListener('mouseenter', function () {
+      svg.classList.add('dim-mode');
+      var es = (n.getAttribute('data-e') || '').split(' ');
+      n.classList.add('active');
+      edges.forEach(function (e) {
+        var e2 = e.getAttribute('data-e');
+        if (es.indexOf(e2) > -1) { e.classList.add('active'); }
+      });
+    });
+    n.addEventListener('mouseleave', function () {
+      svg.classList.remove('dim-mode');
+      edges.forEach(function (e) { e.classList.remove('active'); });
+    });
+  });
+
+  // ---- reveal on scroll ----
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var revs = document.querySelectorAll('.reveal');
+  if (reduce || !('IntersectionObserver' in window)) {
+    revs.forEach(function (r) { r.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: .12 });
+    revs.forEach(function (r) { io.observe(r); });
+  }
+</script>
