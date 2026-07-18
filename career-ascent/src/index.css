@@ -47,6 +47,10 @@ a { color: inherit; }
 .wp:hover { color: var(--ink1); }
 .wp:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent), 0 0 0 6px var(--deep); border-radius: 4px; }
 
+.rail-cap { font-family: var(--mono); font-size: .54rem; letter-spacing: .18em; text-transform: uppercase; color: var(--ink3); padding: 2px 2px; }
+.rail-cap.top { color: var(--accent); margin-bottom: 2px; }
+.rail-cap.bot { margin-top: 2px; }
+
 .hint { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%);
   font-family: var(--mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink3); }
 
