@@ -7,6 +7,10 @@ companions:
 sources: []
 ---
 
+<!-- STALE-BANNER v2026-07-18 -->
+> ⚠️ **PARTIALLY STALE — 2026-07-18 pivot.** Post-2026-07-18 pivot (spectacle-first R3F): capabilities around SEO, the DOM truth layer, and the accessibility launch gate are **dropped**. The world/scene/pilot capabilities survive. Re-derive against `architecture-project-delorenj-2026-07-18`.
+
+
 > **Canonical contract.** This SPEC and the files in `companions:` are the complete, preservation-validated contract for what to build, test, and validate. The PRD carries the full FR-level testable consequences and glossary; the architecture spine carries the 19 binding decisions (ADs), the pinned stack, and the diagrams. This kernel unifies them at capability altitude and must not be read in isolation from those two companions.
 
 # Career Ascent — Jarad DeLorenzo Portfolio World

@@ -9,6 +9,10 @@ generatedBy: bmad-create-epics-and-stories (autonomous /loop, Fast path)
 uxContract: none (aesthetic/interaction requirements folded into PRD §11 + experiential ACs; a dedicated bmad-ux run is an optional deepener)
 ---
 
+<!-- STALE-BANNER v2026-07-18 -->
+> ⚠️ **PARTIALLY STALE — 2026-07-18 pivot.** Post-2026-07-18 pivot to spectacle-first R3F: **Epic 1 (truth layer) and Epic 4 (a11y launch gate) are obsolete**, and truth-layer-first sequencing no longer applies. Epics need re-derivation from `architecture-project-delorenj-2026-07-18`.
+
+
 # Career Ascent — Epic Breakdown
 
 ## Overview

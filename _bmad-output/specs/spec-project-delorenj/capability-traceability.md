@@ -1,3 +1,6 @@
+<!-- STALE-BANNER v2026-07-18 -->
+> ⚠️ **PARTIALLY STALE — 2026-07-18 pivot.** Traces to the **superseded** architecture spine; the a11y / SEO / truth-layer rows are dropped. See `architecture-project-delorenj-2026-07-18`.
+
 # Capability Traceability — Career Ascent
 
 Bridges the SPEC's capabilities to the PRD's functional requirements, the architecture spine's binding decisions, and MVP phasing. Downstream epics/stories cite these three coordinate systems together: a story realizes a `CAP-N`, satisfies specific `FR-n` testable consequences (in `prd.md`), and is governed by specific `AD-n` invariants (in `ARCHITECTURE-SPINE.md`).

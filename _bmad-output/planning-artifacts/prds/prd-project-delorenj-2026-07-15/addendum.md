@@ -1,3 +1,6 @@
+<!-- STALE-BANNER v2026-07-18 -->
+> ⚠️ **STALE STACK — 2026-07-18 pivot.** The Next.js 16 / OpenNext / R3F-in-Next / SSR stack here is **replaced** by a client-only **Vite + R3F** build. See `architecture-project-delorenj-2026-07-18`. The era-by-era world map (§H) still informs the build.
+
 # Addendum — Career Ascent Portfolio World
 
 *Companion to `prd.md`. This holds the technical **how**, rejected alternatives, and deep data/mechanism detail that were deliberately kept out of the capabilities-focused PRD body. It is **input for the downstream `bmad-architecture` workflow to ratify**, not an architecture decision record itself. Source: distilled from `ARCHITECTURE_DRAFT.md` and `BRAINDUMP.md` (both Jul 11). Treat specifics as proposals pending the Architecture phase.*

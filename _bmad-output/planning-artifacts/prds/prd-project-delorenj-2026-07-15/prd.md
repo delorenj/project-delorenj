@@ -5,6 +5,10 @@ created: 2026-07-15
 updated: 2026-07-15
 ---
 
+<!-- STALE-BANNER v2026-07-18 -->
+> ⚠️ **PARTIALLY STALE — 2026-07-18 pivot.** Product **pivoted 2026-07-18** to a spectacle-first, client-only R3F WebGL experience (NOT a findable/accessible website). Personas, era/world content, and cel direction still inform the build; but the 'credibility over spectacle' north star, the §10 accessibility launch gate, and §6/§16 SEO/SSR/truth-layer-first framing are **superseded**. New spine: `architecture-project-delorenj-2026-07-18`.
+
+
 # PRD: Career Ascent — Jarad DeLorenzo Portfolio World
 *Working title — confirm.*
 

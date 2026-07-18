@@ -14,6 +14,10 @@ sources:
   - ../../planning-artifacts/epics.md
 ---
 
+<!-- STALE-BANNER v2026-07-18 -->
+> ⚠️ **PARTIALLY STALE — 2026-07-18 pivot.** The **behavioral half** (SSR, routing-as-truth, Static Timeline as a co-equal surface, the WCAG launch gate, DOM-is-truth) is superseded by the 2026-07-18 spectacle-first pivot — see `architecture-project-delorenj-2026-07-18`. The world model, journeys, camera/interaction, and cel dialect still inform the build.
+
+
 # Career Ascent — Experience & Interaction Contract
 
 This is the behavioral half of the system. **DESIGN.md is the visual reference** — every color, type role, radius, spacing step, and component skin is defined there and named here by `{path.to.token}`. This document says how the thing *behaves*: what navigates, what opens, what degrades, what a screen reader hears, and how five named people move through the world. Where this file and any mock, import, or component-library default disagree, **the spine's token/rule wins on conflict**.

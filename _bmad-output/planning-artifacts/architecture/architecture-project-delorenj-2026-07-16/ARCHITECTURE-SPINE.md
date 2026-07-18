@@ -17,6 +17,10 @@ companions:
   - '_bmad-output/planning-artifacts/prds/prd-project-delorenj-2026-07-15/prd.md'
 ---
 
+<!-- STALE-BANNER v2026-07-18 -->
+> ⚠️ **SUPERSEDED — 2026-07-18 pivot.** Superseded by `../architecture-project-delorenj-2026-07-18/ARCHITECTURE-SPINE.md` (spectacle-first). This website-first spine (DOM-is-truth, SSR, WCAG gate, OpenNext) is retained for history only.
+
+
 # Architecture Spine — Career Ascent
 
 ## Design Paradigm

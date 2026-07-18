@@ -414,6 +414,10 @@ components:
     note: 'SPECTACLE-LAYER arrival flourish for era arrivals / notable artifacts (not persistent chrome). Raised surface; body ink-secondary on raised = 8.4:1 (never ink-tertiary on raised). `accent-strip` defaults to teal and MAY tint to the active band emissive as a world-side arrival flourish — this does not count against the persistent-chrome one-accent rule. Drop-in animates transform/opacity only — no strobe, no bloom flicker.'
 ---
 
+<!-- STALE-BANNER v2026-07-18 -->
+> ⚠️ **STILL CURRENT (visual identity) — 2026-07-18 pivot.** Post-2026-07-18 pivot to spectacle-first R3F, the cel visual system here **carries over intact**. Ignore any DOM / Static-Timeline / WCAG-gate framing in component notes — those surfaces changed; the *look* did not. Render target is now three.js/R3F (see `architecture-project-delorenj-2026-07-18`).
+
+
 # Career Ascent — Design System
 
 A cinematic, scroll-driven 3D "career world" rendered as **comic-book concept-art come to life**. The visitor pilots a rocket-camera up an altitude axis from radio-era ground (BAE, 2004) to deep-space agentic AI (Axioms of AI). This document is the single visual reference for both the **Spectacle Layer** (the WebGL world) and the **Content Truth Layer** (the SSR DOM a recruiter actually reads). One cel dialect; three surfaces; no layer sacrificed for another.
