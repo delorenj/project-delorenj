@@ -420,8 +420,6 @@ A cinematic, scroll-driven 3D "career world" rendered as **comic-book concept-ar
 
 > **North star:** credibility over spectacle. The look must survive a skeptical Staff/Principal reviewer at content, performance, **and** source layers. DOM is truth; WebGL is a leaf enhancement island. Color earns altitude — it is not sprayed.
 
-> **Reference mock:** [`mockups/key-screens.html`](./mockups/key-screens.html) renders this dialect in situ (HUD hero, band ramp, Detail Panel, Static-Timeline contrast fix; theme + motion toggles). Where the mock and this spine disagree, **the spine wins.**
-
 ---
 
 ## 1. Brand & Style

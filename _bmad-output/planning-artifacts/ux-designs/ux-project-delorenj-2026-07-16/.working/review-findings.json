@@ -1,0 +1,228 @@
+{
+  "findings": [
+    {
+      "spine": "DESIGN",
+      "severity": "blocker",
+      "section": "DESIGN \u00a78 components.static-timeline-card + \u00a72 Contrast floor",
+      "issue": "The static-timeline-card swaps its own `surface` to the per-band ramp fill and renders body text (`ink-primary #EDF1F7`) directly on it. On the clouds band (`ramp-lift-2 #6E8296`) that is 3.53:1 \u2014 a WCAG-AA fail for normal text \u2014 and the light-theme pair (`ink-primary-light #141A24` on `ramp-lift-2-light #51667C`) is 2.95:1. The flip-to-ink rule only triggers on 'neon fills (orbit/deep-space),' so clouds \u2014 which hosts THREE eras (Warby, ClassPass, Splash) \u2014 falls through. This directly contradicts the doc's explicit claim that contrast is 'verified at the brightest (clouds) band,' and it breaks the AA launch gate on the exact recruiter-facing / reduced-motion / no-WebGL fallback that the whole Two-Layer contract leans on (Dana's edge case, Sam's entire flow).",
+      "fix": "Give the Static Timeline reading body its own neutral backing plate (as detail-panel does with surface-plate) instead of rendering prose on the poster fill; keep the band ramp for the card's header/frame only. If prose must sit on the fill, extend flip-to-ink to clouds AND constrain reading-surface ramp fills to a luminance range that clears 4.5:1 for one ink polarity, then actually re-run the gate on every band \u00d7 both themes."
+    },
+    {
+      "spine": "BOTH",
+      "severity": "major",
+      "section": "DESIGN & EXPERIENCE frontmatter `status: final` vs DESIGN colors block",
+      "issue": "Both files declare `status: final` and commit to WCAG 2.2 AA as a launch gate with contrast 'verified' \u2014 yet the tokens that must deliver it are marked [ASSUMPTION]: `ink-primary`/`ink-secondary`/`ink-tertiary` (the actual text colors), the ENTIRE light theme ('finalize against the contrast gate'), and `ramp-lift-2` (the very band that fails above). The [ASSUMPTION] tags are not cosmetic \u2014 they conceal the real clouds failure. A skeptical Staff/Principal reviewer reading 'final' + 'verified' + [ASSUMPTION] on the primary text colors reads it as the spec asserting a gate it never ran.",
+      "fix": "Run the contrast gate across all bands and both themes; resolve and remove the [ASSUMPTION] tags on every text/contrast-critical token. Until then, drop `status` to draft/provisional and stop claiming the contrast floor is 'verified.'"
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "minor",
+      "section": "DESIGN \u00a78 components.era-title-lockup",
+      "issue": "Every other text-bearing chrome component defines a backing plate (`hud-telemetry`\u2192surface-plate, `detail-panel`\u2192surface-plate, `loot-callout`\u2192surface-raised), but era-title-lockup defines no `surface`. Its mono eyebrow (`ink-tertiary #7C8AA0`, no ink-shadow) and year therefore ride directly on the moving world backdrop. On a bright cloud band that eyebrow is ~1:1 \u2014 effectively invisible \u2014 violating the doc's own rule 'never let text ride directly on a moving, bright, or busy backdrop.' The inked display title mitigates itself via its offset text-shadow; the eyebrow and year do not.",
+      "fix": "Add a plate/backing token to era-title-lockup, or give the eyebrow and year the same layered ink text-shadow the title uses, so the informational bits clear the contrast floor on the worst-case band."
+    },
+    {
+      "spine": "BOTH",
+      "severity": "minor",
+      "section": "EXPERIENCE \u00a75 Relationship lines / DESIGN \u00a72 through-line",
+      "issue": "The climax payoff is stated as 'the career through-line rendered in teal IS the argument' (Marcus/Flow 2, DESIGN \u00a72). But EXPERIENCE \u00a75 renders those same relationship lines in '`{colors.accent}` teal / `{colors.band-strato-line}` #6FD8FF' \u2014 a distinctly bluer second cyan for the identical 'it converged' semantic. Two hues for one meaning dilutes the single-accent color payoff that the whole argument rests on.",
+      "fix": "Render the semantic through-line in exactly one hue (accent teal). Reserve band-strato-line #6FD8FF for non-semantic filament texture only, or drop it from the through-line entirely."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "minor",
+      "section": "DESIGN \u00a72 colors.accent",
+      "issue": "The single chrome accent `#12E0C8` sits at ~85% HSL saturation, above the \u226480% ceiling for a UI accent, and is spent on chrome (focus core, active state, CTA fill, links). It's defensible as a flat cel fill rather than the banned glow, but on chrome it reads as near-neon, which is the exact register the credibility north-star wants to keep off the instrument layer.",
+      "fix": "Nudge the dark-theme chrome accent down in saturation toward the calmer `-light` sibling (`#0E9E8C`) approach, or explicitly document the deliberate over-ceiling exception and confine it to flat fills (never used with any bloom/glow in chrome)."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "minor",
+      "section": "DESIGN \u00a78 era-title-lockup rule-color / loot-callout accent-strip",
+      "issue": "Both persistent chrome components let their accent 'swap per band from the ramp / to the active band emissive on scroll' \u2014 meaning orange signage (`#FF8A3D`), magenta, and violet band emissives can appear in chrome. This softens the 'exactly ONE chrome accent (teal)' discipline the system defends elsewhere; the more bands the visitor passes, the more the chrome quietly accretes non-teal accents.",
+      "fix": "Classify era-title-lockup and loot-callout explicitly as spectacle-layer arrival flourishes (not persistent instrument chrome), or constrain their accent swap so persistent chrome retains only teal and band-emissive tinting stays in the WebGL world."
+    },
+    {
+      "spine": "EXPERIENCE",
+      "severity": "nit",
+      "section": "EXPERIENCE \u00a713 Flow 1 (Dana) CLIMAX",
+      "issue": "The climax narration asserts 'a quarter-century, ground to orbit' as a factual career-length claim. With BAE stated at 2004 and 'today' 2026 that radio-era span is ~22 years; 'quarter-century' is a rounded number. It's narration now, but if it migrates into hero/panel copy it becomes exactly the kind of rounded metric the system bans.",
+      "fix": "Verify total career span (including the pre-BAE Prologue roles) and either make the figure exact or soften to a non-numeric framing; never let a rounded career-length claim reach product UI without a source."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "nit",
+      "section": "DESIGN \u00a73 typography.display-hero (Bungee)",
+      "issue": "Bungee is a heavy signage/carnival display face and is itself marked [ASSUMPTION]. Used on the hero NAME it risks reading as gimmick rather than 'confident senior poster,' which cuts against the restrained, never-boastful posture the brand voice commits to.",
+      "fix": "Proof the hero name in Bungee against the 'confident, not carnival' bar before finalizing; keep a distressed heavy-grotesk alternate that reads senior, and lock the choice (remove the [ASSUMPTION]) once tested."
+    },
+    {
+      "spine": "EXPERIENCE",
+      "severity": "nit",
+      "section": "EXPERIENCE \u00a74 / \u00a76 Orientation cue",
+      "issue": "'Scroll to climb \u2014 up is later.' sits close to the taste-banned 'Scroll to explore' filler idiom. It's justified here because scroll-UP-equals-forward-in-time is genuinely non-obvious and needs teaching, but the phrasing should be pressure-tested so it reads as a functional affordance, not decorative onboarding filler.",
+      "fix": "Keep the cue tied to the non-obvious inverted-scroll mechanic and phrase it as the mechanic ('Up = later'), avoiding the generic 'Scroll to\u2026' cadence; validate it disappears cleanly after first interaction."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "blocker",
+      "section": "\u00a72 Contrast floor + \u00a77 / component `static-timeline-card` (per-band text pairing)",
+      "issue": "The per-band text-flip rule is binary \u2014 '\u00a72/\u00a77: neon fills demand dark ink; dark bands demand light `ink-primary`' \u2014 but it is keyed on 'neon vs not', not on band luminance, and two mid-tone bands break it on the Static-Timeline card (the surface swaps to the ramp tokens). Measured, body prose (`typography.body` 1rem/400 \u2192 4.5:1 required): CLOUDS `ramp-lift-2` #6E8296 (L=0.215, the design's own 'brightest band') with the specified light `ink-primary` = 3.50:1 \u2192 FAIL; only dark ink clears it (4.79:1). LOW-ATMOSPHERE `ramp-grit-1` #5B6B7A with light text = 4.84:1 \u2192 a fragile pass (0.34 over floor). So the required text color across the ramp is light, light, DARK(clouds), light, dark, dark \u2014 non-monotonic \u2014 yet the written rule only flips to ink on the two neon bands, putting failing light text on clouds. This is the committed Truth/reduced-motion/SEO/fallback surface, so it fails WCAG 1.4.3 exactly where the doc claims it 'verified at the brightest (clouds) \u2026 band.'",
+      "fix": "Make the text-flip predicate luminance-driven, not neon-driven: specify dark `ink-outline-cool` on BOTH `ramp-lift-2` (clouds) and \u2014 for safety margin \u2014 re-check `ramp-grit-1` (low). Cleaner: darken `ramp-lift-2` (and nudge `ramp-grit-1`) so light `ink-primary` clears \u22654.5:1 with headroom, OR add a per-band `text-on-fill` token to the card component that is authored (not derived from a neon test) and pins each band's body text to whichever ink clears \u22654.5:1. Then correct the \u00a72/\u00a77 wording \u2014 the 'dark bands use ink-primary' sentence is the actual bug."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "major",
+      "section": "\u00a78 component `detail-panel` (`link-color: {colors.accent}`) + \u00a72 accent",
+      "issue": "Detail-Panel real links are set in `accent` teal inside `ink-primary` off-white prose with no non-color affordance specified. WCAG 1.4.1 Use of Color (Level A) requires that a link identified within a text block by color also differ from the surrounding text by \u22653:1 luminance OR carry a non-color cue (underline/bold/icon). Measured: accent #12E0C8 vs `ink-primary` #EDF1F7 body = 1.48:1; vs `ink-secondary` = 1.10:1 \u2014 both are light hues, so hue is the ONLY distinguisher. The 10.26:1 the token holds is vs the plate background, which 1.4.1 does not credit. This is a Level-A failure on the panel the doc calls 'the credibility payload.'",
+      "fix": "Underline (or bold/icon) inline links in Detail-Panel / long-form prose by default \u2014 do not rely on teal-vs-off-white hue. Add a rule to the `detail-panel` note and \u00a79 Do/Don't: 'Inline text links carry a non-color indicator (underline) \u2014 color alone is never the link affordance.' Standalone/button-style links (already bordered or on their own line) are exempt."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "major",
+      "section": "\u00a72 `keyline` token, \u00a75 Elevation & Depth, component `button-ghost` (`border-color: {colors.keyline}`)",
+      "issue": "The `keyline` #2A3446 was introduced explicitly to define 'dark-on-dark plate edges where an ink border alone would vanish against `canvas`' (\u00a75) and is the identifying border of `button-ghost` \u2014 the primary theme/motion/repo controls. Measured non-text contrast (WCAG 1.4.11 \u2192 3:1): keyline vs `canvas` = 1.53:1, keyline vs `surface-plate` = 1.38:1. The alternatives are worse (plate fill vs canvas 1.11:1; `ink-outline-cool` border vs canvas 1.01:1). So a ghost button floating on the dark canvas has NO boundary reaching 3:1 \u2014 it can read as plain text rather than an actionable control, and the keyline fails to accomplish the exact job it was created for. (Note: the math also assumes plates are fully opaque \u2014 any alpha/backdrop transparency on chrome plates lets the worst-case band bleed through and voids every \u22654.5:1 text guarantee too.)",
+      "fix": "Raise the interactive-boundary contrast: give `button-ghost` (and any control whose affordance depends on its edge) a border that clears \u22653:1 against BOTH canvas and plate \u2014 e.g. lighten `keyline` toward ~#4A566B (\u22483:1 vs canvas) for interactive use, or add a distinct `keyline-interactive` token. Purely decorative plate hairlines around text-labeled panels may stay (identifiable by content), but state that exemption explicitly. Add a \u00a72 note: chrome plates are opaque (no alpha/blur) so contrast guarantees hold over any band."
+    },
+    {
+      "spine": "BOTH",
+      "severity": "major",
+      "section": "DESIGN components `timeline-rail` (`node-size: {spacing.3}`=12px) & `waypoint-marker` (`size: {spacing.5}`=24px); EXPERIENCE \u00a710 Touch targets",
+      "issue": "EXPERIENCE \u00a710 promises Rail entries, waypoint controls, and mobile toggles 'present at least a comfortable ~44px hit area,' but the DESIGN token system provides no minimum-hit-area token and the visible sizes contradict the promise: the timeline-rail node is 12px (under even the WCAG 2.5.8 AA 24px floor) and the waypoint-marker is 24px (meets 2.5.8 AA but not the 44px the review/EXPERIENCE commit to). Nothing in the spine guarantees the tap target is decoupled from the small visual dot, so an implementer can ship a 12px target that fails 2.5.8.",
+      "fix": "Add a `spacing.target-min: 44px` token and a rule in both docs: interactive controls (rail nodes, waypoint markers, ghost toggles, close buttons) reserve \u226544px hit area via transparent padding / `::before` hit-slop regardless of the visual mark size (12/24px dots keep their look). Reference this token from `timeline-rail`, `waypoint-marker`, and `button-ghost` component objects."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "minor",
+      "section": "\u00a72 LIGHT SECONDARY SET (`accent-light`, `ink-tertiary-light`) \u2014 block already tagged [ASSUMPTION]",
+      "issue": "The light theme is the shipped theme-toggle target, but concrete pairings miss the gate: `accent-light` #0E9E8C link on `surface-plate-light` #FBF8F1 = 3.15:1 \u2192 FAIL 4.5:1 for a color-carried Detail-Panel link (compounds finding #2 in light mode); `ink-tertiary-light` #63707F on `canvas-light` #F4F1EA = 4.48:1 \u2192 FAIL (0.02 under). The block is flagged [ASSUMPTION] 'finalize against the contrast gate' \u2014 this is that finalization: it does not yet pass.",
+      "fix": "Darken `accent-light` to ~#0A7D6E (\u22484.5:1 on the light plate) for use as link/CTA-ink, or reserve `accent-light` for fills only and give light-theme links a darker `link-light` token; darken `ink-tertiary-light` a step to clear 4.5:1. Then drop the [ASSUMPTION] tag only after re-running the contrast pass on the full light set (all ramp/band `-light` siblings), not just these two."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "minor",
+      "section": "\u00a72 ink tokens (`ink-tertiary`) across surfaces",
+      "issue": "Several tertiary/small-label pairings pass only by a hair, and one fails: `ink-tertiary` #7C8AA0 on `surface-raised` #1C2536 = 4.39:1 \u2192 FAIL (loot callouts / waypoint markers use `surface-raised`). Thin passes: `ink-tertiary` on `surface-plate` = 4.92:1 (the 11px HUD `label`), eyebrow on plate = 4.92:1, `ink-tertiary` on `surface-sunken` = 5.27:1, low-atmosphere light body = 4.84:1. At 11\u201312px mono these carry <0.5 headroom, so any token nudge or subpixel rendering can dip them under 4.5:1.",
+      "fix": "Forbid `ink-tertiary` on `surface-raised` (use `ink-secondary` there \u2014 8.35:1). Lighten `ink-tertiary` one step (e.g. ~#8A97AB) to add \u22651.0 headroom on plate/sunken so the tiny instrument labels aren't riding the line, and re-verify eyebrow/label pairings after the change."
+    },
+    {
+      "spine": "EXPERIENCE",
+      "severity": "minor",
+      "section": "\u00a710 Accessibility Floor \u2014 'Focus-not-obscured + dual-backdrop ring'",
+      "issue": "The dual-halo focus ring itself is sound \u2014 measured best-halo clears \u22653:1 on every backdrop including worst cases (ramp-grit-1 4.84:1, ramp-grit-0 5.18:1), and halo-ink\u2194halo-paper internal separation is 17.77:1. But WCAG 2.4.11 Focus Not Obscured is asserted ('never obscured by chrome or scene') with no mechanism. With persistent fixed chrome (HUD corner, Timeline Rail on a vertical edge, Detail-Panel column, mobile toggles), a Tab-focused waypoint or rail entry can scroll partially under sticky chrome, which 2.4.11 (AA) prohibits.",
+      "fix": "Specify the mechanism: focusable targets set `scroll-margin` (and the scroll container `scroll-padding`) equal to the sticky chrome insets so focus always lands clear of the HUD/rail/panel; state that the Detail-Panel and any fixed overlay must not cover the element that opened them. Add this as a concrete behavioral AC under Epic 4 Story 4.2 rather than an assertion."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "blocker",
+      "section": "\u00a72 Contrast floor + `static-timeline-card` component note (Tier-0 reading surface)",
+      "issue": "The Tier-0 card body sits directly on the per-band ramp fill (`surface` swaps per AltitudeBand; `body-color` = ink-primary) and the stated text-pairing rule is binary: 'neon fills (orbit/deep-space) \u2192 ink; on dark bands \u2192 ink-primary (light).' That rule mis-assigns the CLOUDS band, which is bright but non-neon. Measured WCAG: clouds `ramp-lift-2` #6E8296 with ink-primary #EDF1F7 = 3.50:1 (FAILS the committed \u22654.5:1 gate); it only passes with DARK ink (4.87:1). \u00a72 explicitly claims this was 'verified at the brightest (clouds)' band \u2014 so a stated verification is false as tokenized. low-atmosphere #5B6B7A also passes light-text at only 4.84:1, a razor margin that the card's own dark SVG halftone (halftone-dot #0A0E16) laid over the reading area would push under. This is the recruiter's fallback surface (UJ-1 edge case) and the WCAG floor is a committed launch gate, not a floor.",
+      "fix": "Stop riding body text on the saturated band fill. Do for `static-timeline-card` what `detail-panel` already does: confine the band ramp fill + halftone to a header/eyebrow strip and set the reading body on a sober `surface-plate` plate (so contrast is band-invariant and the 'suppress neon/halftone on reading surfaces' principle in \u00a78 is actually honored). If per-band fills must back the text, replace the binary rule with three cases \u2014 dark bands \u2192 light ink; bright non-neon bands (clouds, and treat low-atmosphere the same) \u2192 dark ink; neon fills \u2192 dark ink \u2014 and re-run the contrast gate at EVERY band, not just the two extremes."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "major",
+      "section": "\u00a72 'The six-band grit \u2192 neon ramp' / \u00a77.4",
+      "issue": "The load-bearing claim 'Saturation \u2014 the chroma budget a band is allowed to spend \u2014 increases monotonically with altitude \u2026 AltitudeBand is non-decreasing (AD-8), so the arc is guaranteed to climb' is false as tokenized. Perceptual CIELCh chroma of the six base fills runs ground 37.6 \u2192 low-atmosphere 10.6 \u2192 clouds 13.4 \u2192 stratosphere 16.1 \u2192 orbit 49.9 \u2192 deep-space 77.5. The ground rust `ramp-grit-0` #8A5A2B is the third-MOST chromatic fill of the six and roughly 3.5\u00d7 more colorful than the three bands directly above it (HSL saturation tells the same story: ground 0.53 vs low 0.15). The narrative 'color is scarce down here / most matte' is contradicted by the chosen hex, and AD-8's guarantee is misattributed: band ORDER being non-decreasing does not make CHROMA non-decreasing unless the tokens are picked monotonically \u2014 and they are not. A skeptical reviewer with a color picker (the explicit north-star adversary) catches this immediately.",
+      "fix": "Either (a) neutralize/darken the ground fill toward a genuinely low-chroma matte (pull a*/b* down so the literal ramp climbs from band 1), accepting rust reads via a warm-but-desaturated tone; or (b) stop claiming monotonic 'saturation' and precisely name the quantity that IS monotonic (e.g. neon/emissive intensity, or cool\u2192hot chroma above the ground floor) and explicitly document ground rust as a warm chromatic-but-dark exception that reads as grit, not colorfulness. Do not let the arc-integrity argument rest on a false monotonicity."
+    },
+    {
+      "spine": "EXPERIENCE",
+      "severity": "major",
+      "section": "\u00a79 degradation-ladder table (Physics row) vs \u00a77 vs spine AD-14",
+      "issue": "Direct contradiction on Tier-1 physics. The \u00a79 table shows Physics = 40 / 20 / 8 / 0 across Tiers 3/2/1/0 (Tier 1 = 8 bodies), but \u00a77 says 'Paused under Reduced-Motion and at Fidelity Tier \u2264 1' and AD-14 says physics is 'disabled at Tier \u2264 1.' If \u22641 is disabled, Tier 1 must be 0, not 8. (AD-14 itself is ambiguous \u2014 'disabled at Tier \u2264 1' AND 'per-tier body caps' \u2014 so the drafts inherited the ambiguity rather than resolving it.)",
+      "fix": "Reconcile to one number. If the intent is 'disabled at \u22641,' set the \u00a79 table Tier-1 physics cap to 0 and drop the '8'. If the intent is a minimal Tier-1 physics allowance, change \u00a77 and AD-14 to 'disabled at Tier 0 only' and keep the caps \u2014 but pick one and make table, prose, and AD agree."
+    },
+    {
+      "spine": "BOTH",
+      "severity": "minor",
+      "section": "DESIGN \u00a77.6 Tier-2 vs EXPERIENCE \u00a79 table (Sobel) + EXPERIENCE \u00a79 shed order vs particles",
+      "issue": "Two ordering mismatches in the postprocessing shed. (1) DESIGN \u00a77.6 lists Tier-2 drops as grain/halftone/bloom/particles and does NOT touch the outline (implying Sobel persists through Tier 2, dropped at Tier 1), but the EXPERIENCE \u00a79 table hedges Tier-2 outline as 'inverted-hull + Sobel if headroom' \u2014 i.e. Sobel may already be gone at Tier 2. (2) The \u00a79 intra-postprocessing shed order is 'comic grain \u2192 halftone \u2192 bloom \u2192 Sobel outline \u2192 [then] particles \u2192 DPR \u2192 LOD,' which puts ALL postprocessing (incl. Sobel) before particle reduction; yet the tier table already reduces particles at Tier 2 (Full\u2192Reduced) while Sobel is still present. The granular shed order and the discrete tier mapping disagree about whether Sobel or particles goes first.",
+      "fix": "Make the tier table the ground truth and derive one shed order from it, or vice-versa. Decide explicitly whether Sobel is guaranteed through Tier 2 (then remove 'if headroom') and whether particle caps step down before or after Sobel drops; state the single ordering once and reference it from both \u00a77.6 and \u00a79."
+    },
+    {
+      "spine": "BOTH",
+      "severity": "minor",
+      "section": "DESIGN \u00a77.2 / \u00a77.5 'Chrome mirrors world' vs the chrome/tier-0 border tokens",
+      "issue": "The dialect's declared signature is a 'variable-weight, slightly imperfect' ink contour (\u00a77.2). But that quality lives ONLY in the world at Tier 3 (Sobel post-pass); at Tier 1 even the world loses it (hull only), and chrome + the Tier-0 Static Timeline use uniform solid CSS/SVG borders (ink-hair\u2026ink-bold) with no weight variation or imperfection. So the property the docs use to argue 'World, Chrome, and Static Timeline read as the same object' is present on exactly one of three surfaces at one of four tiers. The 'one object at different scales' claim is undercut on its own signature.",
+      "fix": "Either (a) demote the imperfect/variable line from 'signature' to 'Tier-3 world-only enhancement' in \u00a77.2/\u00a77.5 so the cross-surface claim rests on the toon fill + bold outline + hard offset shadow + halftone (which DO carry across all three), or (b) give chrome/tier-0 a cheap imperfection carrier (e.g. an SVG feTurbulence/displacement or slightly rough stroke on borders) so the signature actually appears on all three surfaces."
+    },
+    {
+      "spine": "EXPERIENCE",
+      "severity": "minor",
+      "section": "\u00a76 State Patterns / \u00a79 Auto-downgrade",
+      "issue": "Mid-session continuity is guaranteed only for context-loss, not for the FPS-driven surface switch. \u00a76 'Mid-session WebGL context loss' explicitly anchors the fallback 'to the visitor's current Era.' But AD-13's runtime monitor can auto-downgrade Tier 1 \u2192 Tier 0, and per AD-9 crossing into Tier 0 tears down the canvas and switches to the Static Timeline. That FPS-triggered Tier-1\u2192Tier-0 tear-down is not given the same 'anchor to current Era, re-open equivalent panel' guarantee \u2014 so a visitor whose GPU degrades mid-scroll could be dumped to the top of the timeline.",
+      "fix": "State that ANY mid-session teardown of the WebGL island (context-loss OR auto-downgrade across the Tier-1\u2192Tier-0 boundary) hands off to the Static Timeline anchored to the current Era with the equivalent panel re-opened. Fold the FPS-downgrade case into the same continuity contract as context-loss in \u00a76/\u00a79."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "minor",
+      "section": "\u00a77.3 / \u00a77.7 flash-safety vs \u00a77.2 Sobel pass",
+      "issue": "The flash-safety gate enumerates halftone (static), bloom/ignition (ramp/ease), grain (low-contrast), and the imperfect ink line (per-object SPATIAL seed, not temporal) \u2014 but says nothing about the Sobel edge-detect POST-pass under the waypoint-jump launch tween. Image-based edge detection is temporally unstable under fast camera motion (edge crawl/shimmer across a large screen area), which is exactly the >3\u00d7/sec large-area high-contrast pattern PEAT flags. The spatial-seed guarantee covers the geometry hull, not the separate image-space Sobel pass.",
+      "fix": "Add the Sobel post-pass to the flash-safety accounting: require temporal stabilization (e.g. edge threshold hysteresis / TAA-style damping / disable or clamp Sobel during high-velocity launch segments) and name it as a PEAT-verified path alongside bloom and halftone, or explicitly justify why flat toon fills keep Sobel edges stable under the launch tween."
+    },
+    {
+      "spine": "BOTH",
+      "severity": "minor",
+      "section": "DESIGN \u00a75/\u00a77 + EXPERIENCE \u00a711 (perf envelope) vs the Tier-3 pass stack",
+      "issue": "The Tier-3 stack is base toon + inverted-hull (a second geometry pass per hero) + Sobel full-screen pass + halftone pass + grain pass + selective bloom (down-sample/threshold/blur/composite = several passes). The docs acknowledge SHEDDING order but never quantify the cost against the budget: the hull roughly doubles draw calls for every outlined hero against the \u226450 mobile / \u2264100 desktop draw-call cap (AD-13), and the post chain is N full-screen fill-rate passes competing on mobile. \u00a711 correctly restricts hull to heroes / excludes instanced objects, but the pass COUNT and hull draw-call multiplier are not carried into perf-budget.json accounting.",
+      "fix": "Add the extra-pass cost to the budget narrative: count the hull as +1 draw call per hero silhouette against the cap, and enumerate the max simultaneous full-screen post passes per tier as a fill-rate line in perf-budget.json \u2014 so the CI budget gate (asserted on the resident-window sum, AD-14) actually covers the passes, not just geometry/texture bytes."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "nit",
+      "section": "\u00a72 ink-temperature rule vs `static-timeline-card` border-color token",
+      "issue": "\u00a72 establishes an altitude-keyed ink temperature (ink-outline-warm low \u2192 ink-outline default \u2192 ink-outline-cool up top) as part of the dialect, and the world uses it. But the Tier-0 `static-timeline-card` hardcodes border-color = ink-outline (neutral default) regardless of band, so the 'ink temperature climbs with altitude' rule is not carried into the fallback surface that is otherwise claimed to be 'the same dialect.'",
+      "fix": "Either swap the card border-color per band (warm/default/cool alongside the surface swap) to carry the rule into Tier-0, or explicitly scope ink-temperature as a world/chrome-only refinement not required of the Static Timeline."
+    },
+    {
+      "spine": "BOTH",
+      "severity": "nit",
+      "section": "DESIGN \u00a75 (bloom only orbit/deep-space) vs \u00a72 stratosphere + EXPERIENCE \u00a75 relationship lines",
+      "issue": "Relationship lines are described as 'glowing filaments' (EXPERIENCE \u00a75) and \u00a72 says they 'first render' in the stratosphere band \u2014 but \u00a75 sanctions emissive/selective bloom only in orbit/deep-space and bans neon-glow as a decorative/depth device elsewhere. A 'glowing' filament in stratosphere sits against that discipline.",
+      "fix": "Clarify that stratosphere relationship lines are flat/emissive-material color (band-strato-line #6FD8FF) WITHOUT bloom, reserving actual glow for orbit/deep-space, or explicitly carve relationship-line emissive out as a sanctioned exception below orbit."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "major",
+      "section": "A. Frontmatter (YAML key order)",
+      "issue": "The DESIGN.md draft frontmatter inserts three extra top-level keys \u2014 status, updated, sources \u2014 between `description` and `colors`. Section A locks the top-level set to exactly name, description, colors, typography, rounded, spacing, components and states \"No extra top-level keys.\" This is the first fast-fail gate (Reviewer order step 1). (EXPERIENCE.md carries the same provenance keys plus `design:`; Section A only gates DESIGN.md, but the two should be aligned.)",
+      "fix": "Remove status/updated/sources from the top level, or nest all provenance under a single non-gated key (e.g. a `meta:` block) so the top-level set is exactly the seven required keys in order. If provenance metadata is intended to be permitted, the rubric \u2014 not the artifact \u2014 should explicitly allowlist it."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "major",
+      "section": "2. Colors / World Render Language 7.4 (Product gate F2)",
+      "issue": "The grit\u2192neon ramp is not monotonic in saturation/chroma, contradicting the \u00a72 claim \"Saturation \u2014 the chroma budget \u2014 increases monotonically with altitude\" and gate F2 (\"monotonic\"). ramp-grit-0 rust #8A5A2B has HSL saturation \u22480.53 (perceptual chroma \u2248C38), which is HIGHER than the next three bands: ramp-grit-1 #5B6B7A (\u22480.15 / C\u224811), ramp-lift-2 #6E8296 (\u22480.16 / C\u224814), and ramp-lift-3 #3E6B72 (\u22480.30 / C\u224820). The break is only at the ground band \u2014 bands 2\u21926 do climb monotonically and the neon summit (neon-4\u2192neon-5) is correct. The same non-monotonic rust appears in the -light ramp (ramp-grit-0-light #7A4E24 vs ramp-grit-1-light #47576A).",
+      "fix": "Either darken/neutralize ramp-grit-0 (and its -light sibling) so chroma is genuinely lowest at the floor, or drop the literal \"increases monotonically with altitude\" over-claim and reframe: rust is high-value/low-vividness matte grit, with monotonicity asserted over the neon-payoff progression, not raw saturation across all six bands."
+    },
+    {
+      "spine": "DESIGN",
+      "severity": "minor",
+      "section": "8. Components \u2014 static-timeline-card (Product gate F3)",
+      "issue": "static-timeline-card sets its `surface` to the full ramp neon fills at the top bands (orbit teal ramp-neon-4, deep-space magenta ramp-neon-5) as the background behind readable era prose, mitigated only by \"On neon fills, title/body flip to ink for \u22654.5:1.\" This is in tension with gate F3 (\"TRUTH LAYER STAYS SOBER \u2014 neon/halftone suppressed where content must be read\"). The tier-0 card is the primary reading surface for the reduced-motion / no-WebGL tier (Sam's UJ-4 reads the entire career here), so multi-paragraph prose on a saturated neon card is spectacle bleeding onto a reading surface even at adequate contrast \u2014 contrast \u2260 soberness.",
+      "fix": "Express the band's neon on the card border/header-strip/accent-strip only and set body prose on a sober inset (surface-plate), or constrain neon-fill cards to short summaries with the deep read always routed to the sober detail-panel; state this rule explicitly so the cel identity is preserved without neon under running text."
+    },
+    {
+      "spine": "EXPERIENCE",
+      "severity": "minor",
+      "section": "10. Accessibility Floor (Cross-Reference rule D)",
+      "issue": "Accessibility Floor restates a literal dimensional value \u2014 \"at least a comfortable ~44px hit area\" \u2014 which violates rule D (\"never restated as a literal hex/px\") and has no matching spacing token (the scale jumps 32px=spacing.6 to 48px=spacing.7). It is also attributed to WCAG 2.5.8, whose AA minimum is 24\u00d724 CSS px; 44px is the 2.5.5 AAA / platform-HIG figure.",
+      "fix": "Add a `tap-target` (or `touch-target`) spacing token to DESIGN.md and reference it as `{spacing.tap-target}`, OR express the tap target purely behaviorally as a named WCAG constant with no px literal. Correct the standards citation (24px is 2.5.8 AA; keep 44px only if explicitly targeting 2.5.5 AAA / HIG)."
+    },
+    {
+      "spine": "EXPERIENCE",
+      "severity": "minor",
+      "section": "4. Voice and Tone (Section C rule: microcopy only)",
+      "issue": "The section opens with brand-voice prose \u2014 \"Voice = confident senior systems-architect: precise, a little wry, never boastful \u2014 the arc and the artifacts do the bragging\" \u2014 duplicating DESIGN.md \u00a71 Brand & Style and PRD \u00a711. The checklist requires Voice and Tone to contain NO aesthetic/brand-posture prose, only Do/Don't microcopy pairs, with brand voice living in DESIGN Brand & Style.",
+      "fix": "Delete the descriptor or reduce it to a bare pointer (\"Brand voice: see DESIGN.md \u00a71\") and lead directly with the Do/Don't microcopy pairs."
+    },
+    {
+      "spine": "EXPERIENCE",
+      "severity": "nit",
+      "section": "4. Voice and Tone (Ban list E: no emojis in product UI)",
+      "issue": "A rocket emoji appears in the 404 Don't example (\"Oops! Page not found \ud83d\ude80\"). It is correctly used as an anti-example (what NOT to ship), not product UI, so it is not a true violation \u2014 but an automated ban-list emoji scan (Section E) will false-positive on it.",
+      "fix": "Optional: describe the anti-pattern in words (\"Oops! Page not found [emoji]\") so a literal ban-scan stays clean, or leave as-is with a reviewer note that the emoji is an intentional Don't example."
+    }
+  ]
+}

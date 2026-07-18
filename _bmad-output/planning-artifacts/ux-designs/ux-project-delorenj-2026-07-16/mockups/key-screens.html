@@ -1,0 +1,548 @@
+<title>Career Ascent — Cel-Shade Key Screens</title>
+<style>
+  /* ============================================================
+     CAREER ASCENT — key-screen mock. Renders the DESIGN.md cel
+     dialect (inked instrument) faithfully in pure 2D CSS: thick
+     ink outlines, flat poster fills, HARD offset shadows (no
+     blur), layered ink on display type, halftone in header
+     strips only. Tokens mirror DESIGN.md exactly.
+     Target faces (Bungee / Geist / JetBrains Mono) can't load
+     over the artifact CSP; heavy system fallbacks stand in.
+     ============================================================ */
+
+  :root {
+    /* ---- DARK (primary / baseline) ---- */
+    --canvas:#0B0F1A; --canvas-deep:#05070D;
+    --plate:#141B2A; --raised:#1C2536; --sunken:#0E1420;
+    --keyline:#2A3446; --keyline-int:#5E6B82;
+    --ink:#0A0E16; --ink-warm:#120D08; --ink-cool:#04121A;
+    --ink-1:#EDF1F7; --ink-2:#B4C0D2; --ink-3:#8A97AB;
+    --halftone:#0A0E16;
+    --accent:#12E0C8; --accent-press:#0FB7A4;
+    --halo-ink:#05070D; --halo-paper:#EDF1F7;
+    /* six-band grit -> neon ramp (chroma climbs: 8.9 10.6 13.4 16.1 49.9 77.5) */
+    --grit-0:#64564C; --grit-1:#5B6B7A; --lift-2:#6E8296;
+    --lift-3:#3E6B72; --neon-4:#12E0C8; --neon-5:#FF3D9A;
+    /* diegetic band emissives (world accents) */
+    --em-ground:#7CF06E; --em-low:#2FBBD6; --em-clouds:#FF8A3D;
+    --em-strato:#4FE3D2; --em-orbit:#B9FFF4; --em-deep:#B14BFF;
+    --gold:#F2C24A;
+    /* ink treatment */
+    --stroke-w:2px; --offset:5px; --offset-sm:3px;
+    --border-w:3px; --border-bold:4px;
+    --shadow-on:#0A0E16;
+    color-scheme:dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --canvas:#F4F1EA; --canvas-deep:#E4DCCB;
+      --plate:#FBF8F1; --raised:#FFFDF7; --sunken:#E9E3D5;
+      --keyline:#C9BFA9; --keyline-int:#6E7A8C;
+      --ink:#14110B; --ink-warm:#1A1207; --ink-cool:#0C1319;
+      --ink-1:#141A24; --ink-2:#3D4656; --ink-3:#5C6875;
+      --halftone:#14110B;
+      --accent:#097868; --accent-press:#076152;
+      --halo-ink:#14110B; --halo-paper:#FFFDF7;
+      --grit-0:#675C54; --grit-1:#47576A; --lift-2:#51667C;
+      --lift-3:#2C565D; --neon-4:#0E9E8C; --neon-5:#C21E6E;
+      --em-ground:#3E9E3A; --em-low:#1E8AA0; --em-clouds:#C96A22;
+      --em-strato:#158F80; --em-orbit:#178C95; --em-deep:#7A34C2;
+      --gold:#B8891F; --shadow-on:#14110B;
+      color-scheme:light;
+    }
+  }
+  :root[data-theme="light"] {
+    --canvas:#F4F1EA; --canvas-deep:#E4DCCB;
+    --plate:#FBF8F1; --raised:#FFFDF7; --sunken:#E9E3D5;
+    --keyline:#C9BFA9; --keyline-int:#6E7A8C;
+    --ink:#14110B; --ink-warm:#1A1207; --ink-cool:#0C1319;
+    --ink-1:#141A24; --ink-2:#3D4656; --ink-3:#5C6875;
+    --halftone:#14110B;
+    --accent:#097868; --accent-press:#076152;
+    --halo-ink:#14110B; --halo-paper:#FFFDF7;
+    --grit-0:#675C54; --grit-1:#47576A; --lift-2:#51667C;
+    --lift-3:#2C565D; --neon-4:#0E9E8C; --neon-5:#C21E6E;
+    --em-ground:#3E9E3A; --em-low:#1E8AA0; --em-clouds:#C96A22;
+    --em-strato:#158F80; --em-orbit:#178C95; --em-deep:#7A34C2;
+    --gold:#B8891F; --shadow-on:#14110B;
+    color-scheme:light;
+  }
+  :root[data-theme="dark"] {
+    --canvas:#0B0F1A; --canvas-deep:#05070D;
+    --plate:#141B2A; --raised:#1C2536; --sunken:#0E1420;
+    --keyline:#2A3446; --keyline-int:#5E6B82;
+    --ink:#0A0E16; --ink-warm:#120D08; --ink-cool:#04121A;
+    --ink-1:#EDF1F7; --ink-2:#B4C0D2; --ink-3:#8A97AB;
+    --halftone:#0A0E16;
+    --accent:#12E0C8; --accent-press:#0FB7A4;
+    --halo-ink:#05070D; --halo-paper:#EDF1F7;
+    --grit-0:#64564C; --grit-1:#5B6B7A; --lift-2:#6E8296;
+    --lift-3:#3E6B72; --neon-4:#12E0C8; --neon-5:#FF3D9A;
+    --em-ground:#7CF06E; --em-low:#2FBBD6; --em-clouds:#FF8A3D;
+    --em-strato:#4FE3D2; --em-orbit:#B9FFF4; --em-deep:#B14BFF;
+    --gold:#F2C24A; --shadow-on:#0A0E16;
+    color-scheme:dark;
+  }
+
+  --font-display: "Bungee","Rubik Mono One","Arial Black","Helvetica Neue",sans-serif;
+  --font-body: "Geist","Satoshi",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono: "JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+
+  * { box-sizing:border-box; }
+  html { -webkit-text-size-adjust:100%; }
+  body {
+    margin:0; background:var(--canvas); color:var(--ink-1);
+    font-family:"Geist","Satoshi",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(var(--halftone) 1px, transparent 1.6px);
+    background-size:22px 22px;
+    background-attachment:fixed;
+  }
+  /* halftone on the canvas is very faint — atmosphere only */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:var(--canvas); opacity:.92; mix-blend-mode:normal;
+  }
+  .wrap{ position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 20px 96px; }
+
+  /* ---------- ink treatment ---------- */
+  .inked{
+    -webkit-text-stroke:var(--stroke-w) var(--ink);
+    paint-order:stroke fill;
+    text-shadow: var(--offset-sm) var(--offset-sm) 0 var(--ink);
+  }
+  .inked-lg{
+    -webkit-text-stroke:3px var(--ink);
+    paint-order:stroke fill;
+    text-shadow: var(--offset) var(--offset) 0 var(--accent),
+                 calc(var(--offset) + 2px) calc(var(--offset) + 2px) 0 var(--ink);
+  }
+
+  .mono{ font-family:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace; }
+  .eyebrow{
+    font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;
+    font-size:.75rem; font-weight:600; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-3);
+  }
+  .label{
+    font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;
+    font-size:.6875rem; font-weight:600; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--ink-3);
+  }
+
+  /* ---------- cel panel (poster with hard offset shadow) ---------- */
+  .panel{
+    background:var(--plate);
+    border:var(--border-w) solid var(--ink);
+    border-radius:6px;
+    box-shadow: var(--offset) var(--offset) 0 var(--shadow-on);
+  }
+
+  /* ---------- top chrome ---------- */
+  header.topbar{
+    position:relative; z-index:2;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    max-width:1180px; margin:0 auto; padding:16px 20px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand .tag{
+    font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;
+    font-weight:700; letter-spacing:.18em; font-size:.8125rem; text-transform:uppercase;
+    color:var(--ink-1);
+  }
+  .brand .dot{ width:14px; height:14px; border-radius:50%; background:var(--accent);
+    border:2px solid var(--ink); box-shadow:2px 2px 0 var(--shadow-on); }
+  .toggles{ display:flex; gap:8px; }
+
+  /* ---------- buttons (press = collapse the offset shadow) ---------- */
+  .btn{
+    font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;
+    font-weight:600; letter-spacing:.08em; text-transform:uppercase; font-size:.8125rem;
+    padding:11px 16px; min-height:44px; border-radius:6px; cursor:pointer;
+    border:var(--border-w) solid var(--ink);
+    box-shadow: var(--offset-sm) var(--offset-sm) 0 var(--shadow-on);
+    transition: transform .08s ease, box-shadow .08s ease;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn:active{ transform: translate(var(--offset-sm),var(--offset-sm)); box-shadow:0 0 0 var(--shadow-on); }
+  .btn-primary{ background:var(--accent); color:var(--ink); }
+  .btn-primary:active{ background:var(--accent-press); }
+  .btn-ghost{ background:transparent; color:var(--ink-1); border-color:var(--keyline-int); box-shadow:var(--offset-sm) var(--offset-sm) 0 var(--sunken); }
+  .btn:focus-visible{ outline:none; box-shadow:
+      0 0 0 3px var(--focus-core, var(--accent)),
+      0 0 0 6px var(--halo-ink),
+      0 0 0 9px var(--halo-paper); }
+
+  /* ---------- hero / HUD ---------- */
+  section.hero{ margin-top:8px; padding:40px 0 8px; }
+  .hero .eyebrow{ display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
+  .hero .pip{ color:var(--accent); }
+  h1.title{
+    font-family:"Bungee","Rubik Mono One","Arial Black",sans-serif;
+    font-weight:400; line-height:.92; letter-spacing:.01em;
+    font-size:clamp(2.75rem,9vw,6.5rem); margin:.15em 0 .1em;
+    color:var(--ink-1); text-wrap:balance;
+  }
+  .hero .sub{ font-size:clamp(1rem,2.4vw,1.35rem); color:var(--ink-2); max-width:62ch; }
+  .hero .sub b{ color:var(--ink-1); font-weight:600; }
+  .hero .cta{ display:flex; gap:12px; flex-wrap:wrap; margin-top:22px; }
+
+  /* HUD telemetry strip */
+  .hud{
+    margin-top:30px; display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0;
+    background:var(--sunken); border:var(--border-w) solid var(--ink); border-radius:6px;
+    box-shadow:var(--offset) var(--offset) 0 var(--shadow-on); overflow:hidden;
+  }
+  .hud .cell{ padding:14px 16px; border-right:2px solid var(--keyline); }
+  .hud .cell:last-child{ border-right:none; }
+  .hud .k{ display:block; margin-bottom:6px; }
+  .hud .v{ font-family:"JetBrains Mono",Menlo,monospace; font-weight:600; font-size:1.25rem; color:var(--ink-1); font-variant-numeric:tabular-nums; }
+  .hud .v .u{ color:var(--ink-3); font-size:.8rem; font-weight:500; }
+  .gauge{ margin-top:8px; height:8px; background:var(--canvas-deep); border:2px solid var(--ink); border-radius:2px; overflow:hidden; }
+  .gauge>i{ display:block; height:100%; width:66%; background:var(--accent); }
+
+  /* ---------- section scaffolding ---------- */
+  section.block{ margin-top:64px; }
+  .block > .head{ display:flex; align-items:baseline; gap:14px; margin-bottom:20px; flex-wrap:wrap; }
+  .block > .head h2{
+    font-family:"Bungee","Arial Black",sans-serif; font-weight:400;
+    font-size:clamp(1.4rem,3.4vw,2.1rem); margin:0; color:var(--ink-1); letter-spacing:.01em;
+  }
+  .block > .head .note{ color:var(--ink-3); font-size:.9rem; max-width:52ch; }
+
+  /* ---------- band ramp legend ---------- */
+  .ramp{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; }
+  .band{
+    border:var(--border-w) solid var(--ink); border-radius:6px; overflow:hidden;
+    box-shadow:var(--offset-sm) var(--offset-sm) 0 var(--shadow-on); background:var(--plate);
+  }
+  .band .swatch{ height:64px; position:relative; }
+  .band .swatch .htone{ position:absolute; inset:0;
+    background-image:radial-gradient(var(--halftone) 1.4px, transparent 1.8px);
+    background-size:8px 8px; opacity:.35; }
+  .band .meta{ padding:10px 12px; border-top:var(--border-w) solid var(--ink); }
+  .band .meta .n{ font-family:"JetBrains Mono",Menlo,monospace; font-weight:600; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-1); }
+  .band .meta .h{ font-family:"JetBrains Mono",Menlo,monospace; font-size:.68rem; color:var(--ink-3); }
+  .chroma{ margin-top:7px; height:6px; background:var(--sunken); border:1.5px solid var(--ink); border-radius:2px; overflow:hidden; }
+  .chroma>i{ display:block; height:100%; background:var(--accent); }
+
+  /* ---------- detail panel (credibility payload) ---------- */
+  .detail{ display:grid; grid-template-columns:1fr; gap:0; overflow:hidden; }
+  .detail .strip{ padding:16px 22px 14px; position:relative; border-bottom:var(--border-bold) solid var(--ink); }
+  .detail .strip .htone{ position:absolute; inset:0; background-image:radial-gradient(var(--halftone) 1.4px, transparent 1.8px); background-size:9px 9px; opacity:.28; pointer-events:none; }
+  .detail .strip .in{ position:relative; }
+  .detail h3{
+    font-family:"Bungee","Arial Black",sans-serif; font-weight:400; letter-spacing:.02em;
+    font-size:clamp(1.5rem,4vw,2.4rem); margin:.1em 0 .05em; color:var(--ink-1);
+  }
+  .detail .yr{ font-family:"JetBrains Mono",Menlo,monospace; font-weight:600; color:var(--ink-1); font-size:.9rem; letter-spacing:.03em; }
+  .detail .body{ padding:22px; background:var(--plate); }
+  .detail .body p{ margin:0 0 14px; color:var(--ink-2); max-width:64ch; }
+  .detail .body p b{ color:var(--ink-1); font-weight:600; }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 20px; }
+  .chip{
+    font-family:"JetBrains Mono",Menlo,monospace; font-size:.7rem; font-weight:600; letter-spacing:.04em;
+    padding:5px 9px; border:2px solid var(--ink); border-radius:4px; background:var(--raised); color:var(--ink-2);
+    box-shadow:2px 2px 0 var(--shadow-on);
+  }
+  a.link{ color:var(--accent); text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:2px; font-weight:600; }
+  a.link:hover{ color:var(--accent-press); }
+  a.link:focus-visible{ outline:none; box-shadow:0 0 0 3px var(--accent),0 0 0 6px var(--halo-ink),0 0 0 9px var(--halo-paper); border-radius:2px; }
+  .links{ display:flex; gap:22px; flex-wrap:wrap; }
+
+  /* ---------- static timeline cards (the contrast proof) ---------- */
+  .cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px; }
+  .stc{ border:var(--border-w) solid var(--ink); border-radius:6px; overflow:hidden;
+    box-shadow:var(--offset) var(--offset) 0 var(--shadow-on); background:var(--plate); }
+  .stc .hd{ padding:14px 16px 12px; position:relative; border-bottom:var(--border-bold) solid var(--ink); }
+  .stc .hd .htone{ position:absolute; inset:0; background-image:radial-gradient(var(--halftone) 1.4px,transparent 1.8px); background-size:8px 8px; opacity:.3; }
+  .stc .hd .in{ position:relative; }
+  .stc .hd .band-name{ font-family:"JetBrains Mono",Menlo,monospace; font-size:.62rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; }
+  .stc .hd h4{ font-family:"Bungee","Arial Black",sans-serif; font-weight:400; font-size:1.2rem; margin:4px 0 0; letter-spacing:.01em; }
+  /* body: ALWAYS on sober plate, band-invariant — the WCAG fix */
+  .stc .bd{ padding:16px; background:var(--plate); }
+  .stc .bd p{ margin:0 0 12px; font-size:.9rem; color:var(--ink-2); }
+  .stc .bd .yr{ font-family:"JetBrains Mono",Menlo,monospace; font-size:.72rem; color:var(--ink-3); }
+
+  /* header-strip band fills (ink adapts for legibility on the strip label) */
+  .b-ground .hd{ background:var(--grit-0); } .b-ground .hd .in{ color:var(--ink-1); }
+  .b-ground .hd .band-name{ color:var(--em-ground); }
+  .b-clouds .hd{ background:var(--lift-2); } .b-clouds .hd .in *{ color:var(--ink); }
+  .b-clouds .hd .band-name{ color:var(--ink); }
+  .b-orbit .hd{ background:var(--neon-4); } .b-orbit .hd .in *{ color:var(--ink); }
+  .b-orbit .hd .band-name{ color:var(--ink-cool); }
+
+  /* ---------- timeline rail ---------- */
+  .rail-wrap{ display:grid; grid-template-columns:auto 1fr; gap:26px; align-items:start; }
+  .rail{ position:relative; padding-left:6px; }
+  .rail ol{ list-style:none; margin:0; padding:0; position:relative; }
+  .rail ol::before{ content:""; position:absolute; left:11px; top:6px; bottom:6px; width:4px; background:var(--keyline); border-radius:2px; }
+  .rail li{ position:relative; padding:6px 0 6px 34px; display:flex; align-items:center; min-height:44px; }
+  .rail .node{ position:absolute; left:0; top:50%; transform:translateY(-50%); width:22px; height:22px; border-radius:50%;
+    border:3px solid var(--ink); box-shadow:2px 2px 0 var(--shadow-on); background:var(--raised); }
+  .rail li .yr{ font-family:"JetBrains Mono",Menlo,monospace; font-size:.72rem; color:var(--ink-3); width:52px; }
+  .rail li .nm{ font-size:.92rem; color:var(--ink-2); }
+  .rail li.active .nm{ color:var(--ink-1); font-weight:600; }
+  .rail li.active .node{ background:var(--accent); width:26px; height:26px; left:-2px; }
+
+  /* ---------- loot callout ---------- */
+  .loot{ display:inline-flex; align-items:center; gap:14px; padding:14px 20px;
+    background:var(--raised); border:var(--border-bold) solid var(--ink); border-radius:6px;
+    box-shadow:var(--offset) var(--offset) 0 var(--em-strato); }
+  .loot .bang{ font-family:"Bungee","Arial Black",sans-serif; color:var(--em-strato); font-size:1.6rem; -webkit-text-stroke:2px var(--ink); paint-order:stroke fill; }
+  .loot .lt .k{ font-family:"JetBrains Mono",Menlo,monospace; font-size:.62rem; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-3); }
+  .loot .lt .v{ font-family:"Bungee","Arial Black",sans-serif; font-size:1.05rem; letter-spacing:.03em; color:var(--ink-1); text-transform:uppercase; }
+
+  /* ---------- component detail row ---------- */
+  .compgrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; }
+  .cardlet{ padding:18px; }
+  .cardlet h5{ margin:0 0 12px; }
+  .focusdemo{ margin-top:14px; }
+  .focusdemo .fx{ display:inline-block; padding:8px 14px; border:3px solid var(--ink); border-radius:6px; background:var(--plate);
+    box-shadow:0 0 0 3px var(--accent),0 0 0 6px var(--halo-ink),0 0 0 9px var(--halo-paper); font-family:"JetBrains Mono",Menlo,monospace; font-size:.75rem; letter-spacing:.06em; }
+  .swrow{ display:flex; gap:0; margin-top:6px; border:2px solid var(--ink); border-radius:4px; overflow:hidden; }
+  .swrow>span{ height:26px; flex:1; }
+
+  /* ---------- footer ---------- */
+  footer.foot{ margin-top:72px; padding-top:22px; border-top:3px solid var(--keyline); color:var(--ink-3); font-size:.82rem; }
+  footer.foot .row{ display:flex; gap:10px 26px; flex-wrap:wrap; align-items:center; }
+  footer.foot code{ font-family:"JetBrains Mono",Menlo,monospace; color:var(--ink-2); }
+  .pill{ font-family:"JetBrains Mono",Menlo,monospace; font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; padding:3px 8px; border:2px solid var(--keyline-int); border-radius:99px; color:var(--ink-2); }
+
+  /* ---------- load-in motion (reduced-motion safe) ---------- */
+  @media (prefers-reduced-motion: no-preference){
+    .drop{ opacity:0; transform:translateY(14px); animation:drop .5s cubic-bezier(.2,.7,.2,1) forwards; }
+    .d1{ animation-delay:.05s } .d2{ animation-delay:.13s } .d3{ animation-delay:.22s } .d4{ animation-delay:.32s }
+    @keyframes drop{ to{ opacity:1; transform:none; } }
+  }
+
+  @media (max-width:640px){
+    .rail-wrap{ grid-template-columns:1fr; }
+    h1.title{ -webkit-text-stroke:2px var(--ink); }
+  }
+</style>
+
+<header class="topbar">
+  <div class="brand"><span class="dot"></span><span class="tag">Career Ascent</span></div>
+  <div class="toggles">
+    <button class="btn btn-ghost" id="theme" type="button" aria-label="Toggle light and dark theme">◐ Theme</button>
+    <button class="btn btn-ghost" id="motion" type="button" aria-pressed="false" aria-label="Toggle reduced motion">◎ Motion</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ HERO / HUD ============ -->
+  <section class="hero">
+    <div class="eyebrow drop d1">
+      <span>SEQ 06 / 09</span><span class="pip">◆</span><span>BAND · STRATOSPHERE</span><span class="pip">◆</span><span>DARK-ANCHORED</span>
+    </div>
+    <h1 class="title inked-lg drop d2">CAREER<br>ASCENT</h1>
+    <p class="sub drop d3">A scroll-driven cel-shaded career world. You pilot a rocket-camera up an altitude axis — <b>radio-era grit at the ground, agentic-AI neon in deep space</b> — where color earns altitude and the source survives inspection.</p>
+    <div class="cta drop d3">
+      <button class="btn btn-primary" type="button">▲ Launch the ascent</button>
+      <button class="btn btn-ghost" type="button">▤ Static timeline</button>
+      <button class="btn btn-ghost" type="button">↧ Résumé</button>
+    </div>
+
+    <div class="hud drop d4" role="group" aria-label="World telemetry (diegetic)">
+      <div class="cell"><span class="k label">Sequence</span><span class="v">06<span class="u"> / 09</span></span></div>
+      <div class="cell"><span class="k label">Altitude</span><span class="v">78<span class="u">km · stratosphere</span></span>
+        <div class="gauge" aria-hidden="true"><i></i></div></div>
+      <div class="cell"><span class="k label">Era window</span><span class="v">2018<span class="u">–2024</span></span></div>
+      <div class="cell"><span class="k label">Fidelity tier</span><span class="v">3<span class="u"> · full cel</span></span></div>
+    </div>
+  </section>
+
+  <!-- ============ BAND RAMP (proof: monotonic grit -> neon) ============ -->
+  <section class="block">
+    <div class="head">
+      <span class="label">01 · palette</span>
+      <h2>Color earns altitude</h2>
+      <span class="note">Six altitude bands. Perceptual chroma climbs monotonically with height — matte grit at the floor, plasma neon at the summit.</span>
+    </div>
+    <div class="ramp">
+      <div class="band"><div class="swatch" style="background:var(--grit-0)"><div class="htone"></div></div>
+        <div class="meta"><div class="n">1 · Ground</div><div class="h">#64564C · matte rust</div><div class="chroma"><i style="width:11%"></i></div></div></div>
+      <div class="band"><div class="swatch" style="background:var(--grit-1)"></div>
+        <div class="meta"><div class="n">2 · Low-atmos</div><div class="h">#5B6B7A · steel</div><div class="chroma"><i style="width:14%"></i></div></div></div>
+      <div class="band"><div class="swatch" style="background:var(--lift-2)"></div>
+        <div class="meta"><div class="n">3 · Clouds</div><div class="h">#6E8296 · slate</div><div class="chroma"><i style="width:17%"></i></div></div></div>
+      <div class="band"><div class="swatch" style="background:var(--lift-3)"></div>
+        <div class="meta"><div class="n">4 · Stratosphere</div><div class="h">#3E6B72 · pivot</div><div class="chroma"><i style="width:21%"></i></div></div></div>
+      <div class="band"><div class="swatch" style="background:var(--neon-4)"><div class="htone"></div></div>
+        <div class="meta"><div class="n">5 · Orbit</div><div class="h">#12E0C8 · plasma-teal</div><div class="chroma"><i style="width:64%"></i></div></div></div>
+      <div class="band"><div class="swatch" style="background:var(--neon-5)"><div class="htone"></div></div>
+        <div class="meta"><div class="n">6 · Deep-space</div><div class="h">#FF3D9A · magenta</div><div class="chroma"><i style="width:100%"></i></div></div></div>
+    </div>
+  </section>
+
+  <!-- ============ ERA DETAIL PANEL (credibility payload) ============ -->
+  <section class="block">
+    <div class="head">
+      <span class="label">02 · detail panel</span>
+      <h2>The credibility payload</h2>
+      <span class="note">Inked instrument, sober where it's read. Neon and halftone stay in the header strip; the body is calm plate. Inline links carry an underline — never color alone.</span>
+    </div>
+    <div class="panel detail">
+      <div class="strip" style="background:var(--lift-3)"><div class="htone"></div>
+        <div class="in">
+          <div class="eyebrow" style="color:var(--em-strato)">STRATOSPHERE · WHOLE-SYSTEM SIGHT</div>
+          <h3 class="inked">Justworks</h3>
+          <div class="yr">2018 — 2024 · Staff Engineer / Architect</div>
+        </div>
+      </div>
+      <div class="body">
+        <p><b>Staff-level pattern recognition at scale.</b> Earth-curvature views of architecture constellations — service diagrams, temporal trees, compliance engines, payment orbits — the altitude where you stop seeing features and start seeing the whole system.</p>
+        <p>Owned the time-and-pay computation core and the platform patterns beneath it: correctness under regulation, layered abstraction, and testing maturity as a first-class discipline.</p>
+        <div class="chips">
+          <span class="chip">TimeEngine</span><span class="chip">OvertimeEngine</span><span class="chip">Payment Center</span>
+          <span class="chip">GraphQL</span><span class="chip">React</span><span class="chip">Distributed systems</span><span class="chip">Testing Maturity Model</span><span class="chip">Hybrid RAG</span>
+        </div>
+        <div class="links">
+          <a class="link" href="#">Read the write-up ↗</a>
+          <a class="link" href="#">Source ↗</a>
+          <a class="link" href="#">Résumé line ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STATIC TIMELINE CARDS (the contrast fix, proven) ============ -->
+  <section class="block">
+    <div class="head">
+      <span class="label">03 · static timeline · tier-0</span>
+      <h2>The fallback stays sober</h2>
+      <span class="note">The reduced-motion / no-WebGL surface a recruiter actually reads. Band color lives in the header strip only; body prose always sits on band-invariant plate, so every card clears WCAG AA — including the bright clouds band that failed the naïve version.</span>
+    </div>
+    <div class="cards">
+      <article class="stc b-ground">
+        <div class="hd"><div class="htone"></div><div class="in"><div class="band-name">Ground · Band 1</div><h4>BAE Systems</h4></div></div>
+        <div class="bd"><div class="yr">2004 – 2010 · Software Engineer</div>
+          <p>Radio hardware and signals: oscilloscopes, spectrum analyzers, green waveforms, test benches. Embedded systems, Java / J2EE, SCA, disciplined TDD. Grounded, engineered, physical.</p>
+          <a class="link" href="#">Open era ↗</a></div>
+      </article>
+      <article class="stc b-clouds">
+        <div class="hd"><div class="htone"></div><div class="in"><div class="band-name">Clouds · Band 3</div><h4>Warby Parker</h4></div></div>
+        <div class="bd"><div class="yr">Computer-vision era</div>
+          <p>Vision systems and calibration — the altitude where the work lifts off the ground plane. Body text stays on sober plate here on purpose: this is the exact band whose neon fill failed contrast at 3.5:1.</p>
+          <a class="link" href="#">Open era ↗</a></div>
+      </article>
+      <article class="stc b-orbit">
+        <div class="hd"><div class="htone"></div><div class="in"><div class="band-name">Orbit · Band 5</div><h4>ACD · IntelliForia</h4></div></div>
+        <div class="bd"><div class="yr">2023 – present · Agentic AI</div>
+          <p>Orbital stations and MCP docking ports: retrieval beams, clinical-note satellites, compliance shields, agent constellations. RAG, multi-agent orchestration, evaluation, guardrails, real-time compliance scoring.</p>
+          <a class="link" href="#">Open era ↗</a></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ RAIL + LOOT ============ -->
+  <section class="block">
+    <div class="head">
+      <span class="label">04 · navigation</span>
+      <h2>Timeline rail &amp; loot</h2>
+      <span class="note">The persistent rail is the Truth-Layer index — every entry a real link, ≥44px hit area. The loot callout is the one playful voice: a spectacle arrival flourish, never persistent chrome.</span>
+    </div>
+    <div class="rail-wrap">
+      <nav class="rail panel" style="padding:14px 18px" aria-label="Career timeline">
+        <ol>
+          <li><span class="node" style="background:var(--grit-0)"></span><span class="yr">SEQ 0</span><span class="nm">Prologue — launchpad</span></li>
+          <li><span class="node" style="background:var(--grit-0)"></span><span class="yr">SEQ 1</span><span class="nm">BAE Systems · radio</span></li>
+          <li><span class="node" style="background:var(--grit-1)"></span><span class="yr">SEQ 2</span><span class="nm">Web / agency era</span></li>
+          <li><span class="node" style="background:var(--lift-2)"></span><span class="yr">SEQ 3</span><span class="nm">Warby Parker · vision</span></li>
+          <li><span class="node" style="background:var(--lift-2)"></span><span class="yr">SEQ 4</span><span class="nm">ClassPass · SagePoint</span></li>
+          <li><span class="node" style="background:var(--lift-2)"></span><span class="yr">SEQ 5</span><span class="nm">Splash · platform</span></li>
+          <li class="active"><span class="node"></span><span class="yr">SEQ 6</span><span class="nm">Justworks · architecture</span></li>
+          <li><span class="node" style="background:var(--neon-4)"></span><span class="yr">SEQ 7</span><span class="nm">ACD · IntelliForia</span></li>
+          <li><span class="node" style="background:var(--neon-5)"></span><span class="yr">SEQ 8</span><span class="nm">Axioms of AI · finale</span></li>
+        </ol>
+      </nav>
+      <div>
+        <div class="loot"><span class="bang">!</span>
+          <div class="lt"><div class="k">Artifact unlocked</div><div class="v">TimeEngine</div></div>
+        </div>
+        <div class="compgrid" style="margin-top:22px">
+          <div class="panel cardlet">
+            <h5 class="label">Buttons · press = shadow collapse</h5>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+              <button class="btn btn-primary" type="button">▲ Launch</button>
+              <button class="btn btn-ghost" type="button">◐ Toggle</button>
+            </div>
+          </div>
+          <div class="panel cardlet">
+            <h5 class="label">Focus · dual-backdrop ring</h5>
+            <div class="focusdemo"><span class="fx" tabindex="0">Tab to focus →</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TYPE + INK ============ -->
+  <section class="block">
+    <div class="head">
+      <span class="label">05 · type &amp; ink</span>
+      <h2>Bold where it flexes, clean where it reads</h2>
+      <span class="note">Heavy comic-grotesk display, inked with a hard offset. Geist / Satoshi for sober reading. JetBrains Mono for every readout.</span>
+    </div>
+    <div class="compgrid">
+      <div class="panel cardlet">
+        <div class="eyebrow">Display · inked</div>
+        <div class="inked" style="font-family:'Bungee','Arial Black',sans-serif;font-size:2rem;margin-top:6px;line-height:1">Ascent</div>
+        <div class="label" style="margin-top:12px">Bungee / Rubik Mono · hero + era titles only</div>
+      </div>
+      <div class="panel cardlet">
+        <div class="eyebrow">Body · sober</div>
+        <p style="margin:8px 0 0;color:var(--ink-2);font-size:.95rem">The reading measure stays calm and legible — the credibility surface a Staff reviewer scans. No neon under running text.</p>
+        <div class="label" style="margin-top:12px">Geist / Satoshi</div>
+      </div>
+      <div class="panel cardlet">
+        <div class="eyebrow">Telemetry · mono</div>
+        <div class="mono" style="font-size:1.25rem;font-weight:600;margin-top:6px;color:var(--ink-1);font-variant-numeric:tabular-nums">ALT 78km · 2018</div>
+        <div class="swrow" title="ink · secondary · tertiary">
+          <span style="background:var(--ink-1)"></span><span style="background:var(--ink-2)"></span><span style="background:var(--ink-3)"></span>
+        </div>
+        <div class="label" style="margin-top:10px">JetBrains Mono</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="row" style="margin-bottom:10px">
+      <span class="pill">Dark-anchored + light</span>
+      <span class="pill">WCAG 2.2 AA gated</span>
+      <span class="pill">Reduced-motion parity</span>
+      <span class="pill">Tier 3→0 degrade</span>
+      <span class="pill">No fabricated metrics</span>
+    </div>
+    <div class="row">
+      <span>Cel dialect across World · Chrome · Static Timeline. Spec: <code>DESIGN.md</code> + <code>EXPERIENCE.md</code>.</span>
+    </div>
+    <div class="row" style="margin-top:8px;color:var(--ink-3)">
+      <span>Toggle the theme and motion controls above — both spines are honored here. Target faces (Bungee / Geist / JetBrains Mono) render via system fallbacks in this CSP-sandboxed preview.</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  (function(){
+    var root=document.documentElement;
+    // theme toggle: resolve current, then stamp the opposite
+    document.getElementById('theme').addEventListener('click',function(){
+      var cur=root.getAttribute('data-theme');
+      if(!cur){ cur=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'; }
+      root.setAttribute('data-theme', cur==='dark'?'light':'dark');
+    });
+    // motion toggle: add a class that freezes the load-in + any motion
+    var mbtn=document.getElementById('motion');
+    mbtn.addEventListener('click',function(){
+      var on=root.getAttribute('data-motion')==='off';
+      root.setAttribute('data-motion', on?'on':'off');
+      mbtn.setAttribute('aria-pressed', on?'false':'true');
+      document.querySelectorAll('.drop').forEach(function(el){ el.style.animation='none'; el.style.opacity='1'; el.style.transform='none'; });
+    });
+  })();
+</script>

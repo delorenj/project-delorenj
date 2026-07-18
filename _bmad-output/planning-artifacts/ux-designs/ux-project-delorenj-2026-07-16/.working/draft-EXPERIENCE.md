@@ -99,11 +99,11 @@ The product is two co-equal layers held in tension. This section is the behavior
 
 ## 4. Voice and Tone
 
-Brand voice lives in DESIGN.md §1 (Brand & Style); this section is microcopy Do/Don't pairs only. Never fabricate metrics — use a `[metric]` placeholder when real data is absent. Never use hype clichés (Elevate / Seamless / Unleash / Next-Gen and kin). Never format as `LABEL // YEAR`. No emojis in product UI.
+Voice = confident senior systems-architect: **precise, a little wry, never boastful** — the arc and the artifacts do the bragging (full brand posture lives in DESIGN.md §1). This section is microcopy Do/Don't pairs only. Never fabricate metrics — use a `[metric]` placeholder when real data is absent. Never use hype clichés (Elevate / Seamless / Unleash / Next-Gen and kin). Never format as `LABEL // YEAR`. No emojis in product UI.
 
 **Orientation cue (diegetic, first 3–5s)**
-- Do: "Up = later — climb through the years, or jump to any era." (teaches the inverted-scroll mechanic; dismisses after first interaction).
-- Don't: "Scroll to explore." / "Welcome! Start your journey now." / a modal tutorial overlay.
+- Do: "Scroll to climb — up is later." / "Scroll up through the years, or jump to any era."
+- Don't: "Welcome! Start your journey now." / a modal tutorial overlay.
 
 **HUD readouts**
 - Do: `2004 · GROUND` / `ALT 0 km · 6% ASCENT` (plain mono telemetry).
@@ -135,7 +135,7 @@ Brand voice lives in DESIGN.md §1 (Brand & Style); this section is microcopy Do
 
 **404 / empty / not-found**
 - Do: "That era moved. Here's the whole timeline." (drops into Static Timeline).
-- Don't: "Oops! Page not found [emoji]" / a dead canvas.
+- Don't: "Oops! Page not found 🚀" / a dead canvas.
 
 **Source-as-Exhibit**
 - Do: "Read the source. It's meant to be inspected." / "Built with AI, to my standard — that's the point."
@@ -155,13 +155,13 @@ Behavior and rules only — every visual spec (color, size, radius, shadow) live
 
 **Detail Panel — `{components.detail-panel}` (AD-17).** One `activePanel` at a time. Opening moves focus into the panel; closing (Esc, close control, or backdrop) restores focus to the trigger. At most one panel open — opening a second closes the first. World Waypoints, Static-Timeline anchors, and deep-link cold-load all open panels through the *same* controller with identical Career-Data content. A selected cel Artifact/Waypoint *calls* this controller — it never rolls its own focus handling.
 
-**Timeline Rail — `{components.timeline-rail}`.** Selecting an entry issues a Waypoint jump (see §7/§8) and fires the analytics **jump-arrival** event keyed by slug. As the visitor free-scrolls, the rail highlights the settled Era (fill swap, not glow). Every entry is a real `<button>/<a>` firing the same navigation as a click, reserving a ≥ `{spacing.tap-target}` hit area (§10) regardless of the visual mark size.
+**Timeline Rail — `{components.timeline-rail}`.** Selecting an entry issues a Waypoint jump (see §7/§8) and fires the analytics **jump-arrival** event keyed by slug. As the visitor free-scrolls, the rail highlights the settled Era (fill swap, not glow). Every entry is a real `<button>/<a>` firing the same navigation as a click.
 
-**Waypoint Marker — `{components.waypoint-marker}`.** A selectable in-world point that is a real focusable control with a DOM equivalent. Pointer-click and keyboard Enter/Space fire identical navigation; selection is a flat fill swap, never bloom. Never raycast-only. Its hit area is ≥ `{spacing.tap-target}` via transparent hit-slop, decoupled from the small visual dot (§10).
+**Waypoint Marker — `{components.waypoint-marker}`.** A selectable in-world point that is a real focusable control with a DOM equivalent. Pointer-click and keyboard Enter/Space fire identical navigation; selection is a flat fill swap, never bloom. Never raycast-only.
 
 **Static-Timeline Card — `{components.static-timeline-card}`.** Each Era is a card in `sequence.config` order (AD-6). With JS, its Detail Panel opens through the same single controller; without JS, it degrades to native `<details>` or its `/journey/[era]` route. Scroll-into-view fires the **traversal** analytics event; anchor-click fires **jump-arrival** (AD-19). Fully operable with JS and WebGL both unavailable.
 
-**Buttons — `{components.button-primary}` / `{components.button-ghost}`.** Primary (résumé/CTA) and ghost (theme toggle, motion/pause toggle, repo link) both press by *collapsing the offset shadow* so the control moves toward the surface — `transform` only, no layout/color animation. Both are persistent and keyboard-reachable, each reserving a ≥ `{spacing.tap-target}` hit area (§10); ghost toggles are stateful (pressed/`aria-pressed`).
+**Buttons — `{components.button-primary}` / `{components.button-ghost}`.** Primary (résumé/CTA) and ghost (theme toggle, motion/pause toggle, repo link) both press by *collapsing the offset shadow* so the control moves toward the surface — `transform` only, no layout/color animation. Both are persistent and keyboard-reachable; ghost toggles are stateful (pressed/`aria-pressed`).
 
 **Focus ring — `{components.focus-ring}`.** Rendered above the canvas for every focusable element. Follows logical DOM focus order; never `outline:none`; never color-only (behavioral detail in §10).
 
@@ -169,13 +169,13 @@ Behavior and rules only — every visual spec (color, size, radius, shadow) live
 
 **Theme + motion toggles.** Two persistent ghost controls. **Theme** swaps the dark/`-light` token set (dialect stays theme-invariant; only fill/atmosphere tokens change). **Motion** flips the single motion flag that gates all camera/parallax/physics/idle-drift (AD-9); it re-evaluates on the `matchMedia` change event and is honored even when OS `prefers-reduced-motion` is unset (OS setting alone does not satisfy WCAG 2.2.2).
 
-**Relationship lines (through-line).** Filaments connect a pattern in one Era to a capability in a later one (e.g. SagePoint taxonomy → RAG). The semantic through-line renders in **exactly one hue — the connective accent `{colors.accent}` teal** — so the single-accent color payoff on which the argument rests is never diluted by a second cyan; the same "it converged" relationships are also stated in panel prose so the meaning survives without the Spectacle. Below `orbit` the filaments carry **flat/emissive material color, not bloom-glow** (actual glow is reserved for `orbit`/`deep-space` per DESIGN.md §5); `{colors.band-strato-line}` is reserved for non-semantic filament *texture* only, never for the through-line itself.
+**Relationship lines (through-line).** Glowing filaments connect a pattern in one Era to a capability in a later one (e.g. SagePoint taxonomy → RAG). Rendered in the connective accent (`{colors.accent}` / `{colors.band-strato-line}`), they are decorative and diegetic; the same "it converged" relationships are also stated in panel prose so the meaning survives without the Spectacle.
 
 ---
 
 ## 6. State Patterns
 
-**First-visit / diegetic onboarding.** Teach "up = later" (scroll up = forward in time and altitude — the non-obvious inverted-scroll mechanic) within the **first 3–5 seconds** via an *in-world* cue (Bruno-Simon style), not a tutorial overlay; the cue **dismisses cleanly after the first scroll interaction**. Any consent UI is sequenced **not to collide** with this cue and is keyboard- and reduced-motion-safe (AD-19).
+**First-visit / diegetic onboarding.** Teach "scroll up = up in time and altitude" within the **first 3–5 seconds** via an *in-world* cue (Bruno-Simon style), not a tutorial overlay. Any consent UI is sequenced **not to collide** with this cue and is keyboard- and reduced-motion-safe (AD-19).
 
 **Loading (per-scene).** On approach/arrival a Scene shows a **bounded** loading placeholder — a cel-styled poster/skeleton (flat `{colors.surface-plate}` fill + `{colors.ink-outline}` border, per the dialect) — never a blank/broken canvas (FR-33). The DOM behind it is already rendered and readable.
 
@@ -193,7 +193,7 @@ Behavior and rules only — every visual spec (color, size, radius, shadow) live
 
 **Low-tier / no-WebGL.** Fidelity Tier 0–3 (§9). Boot-time GPU detection (`detect-gpu`) + a runtime monitor with hysteresis; auto-downgrade one tier if avg FPS < 40 for > 2s (AD-13). Tier 0 / no-WebGL2 / context-lost ⇒ Static Timeline. Manual override available. Fidelity Tier and Reduced-Motion are **orthogonal**.
 
-**Mid-session teardown of the WebGL island (context loss *or* FPS auto-downgrade).** Any mid-session teardown — an iOS-Safari-likely `webglcontextlost`, **or** the runtime monitor (AD-13) auto-downgrading across the Tier-1→Tier-0 boundary (AD-9, which tears the canvas down) — falls to the Static Timeline **anchored to the visitor's current Era**, re-opening the equivalent Detail Panel where possible — never dumped to the top. Both paths share one continuity contract (§9).
+**Mid-session WebGL context loss (iOS-Safari-likely).** Falls to the Static Timeline **anchored to the visitor's current Era**, re-opening the equivalent Detail Panel where possible — never dumped to the top.
 
 **Mobile simplified mode.** Adapts to a performant lower-fidelity spectacle (Tier 1–2, reduced effects, touch nav) preserving all content; holds the mobile frame budget or drops to the Static Timeline rather than stuttering.
 
@@ -262,22 +262,22 @@ Behavior and rules only — every visual spec (color, size, radius, shadow) live
 
 Two orthogonal axes. **Fidelity Tier** (0–3) is a *quality* axis owned by the one runtime monitor (AD-13). **Reduced-Motion** is a *motion* preference (AD-9). The cel *identity* survives everything down to a surface switch; only *polish* degrades. The full visual mapping is DESIGN.md §7.6/§9; below is the behavior.
 
-**The load-bearing rule:** degrade **polish before identity.** The ink outline's baseline is **inverted-hull geometry**, not a post-process pass — because the monitor sheds postprocessing first, and the brand's signature must not be the first casualty. The Sobel edge pass is a Tier-3 enhancement on top. The cross-surface "same object" identity (World, Chrome, Static Timeline) rests on the **toon fill, bold ink outline, hard offset shadow, and halftone** — the four properties that carry across all three surfaces; the *variable-weight, slightly imperfect* contour is a **Tier-3 world-only enhancement** (the Sobel pass), not the cross-surface signature.
+**The load-bearing rule:** degrade **polish before identity.** The ink outline's baseline is **inverted-hull geometry**, not a post-process pass — because the monitor sheds postprocessing first, and the brand's signature must not be the first casualty. The Sobel edge pass is a Tier-3 enhancement on top.
 
 | Behavior | Tier 3 (full) | Tier 2 | Tier 1 | Tier 0 |
 |---|---|---|---|---|
 | **Rendered surface** | WebGL island | WebGL island | WebGL island | **No WebGL — Static Timeline** |
 | **Toon ramp** (identity floor) | 3-band, all heroes | 3-band | 2–3 band (~free) | CSS flat poster fills from `{colors.ramp-grit-0}`…`{colors.ramp-neon-5}` |
-| **Ink outline** | Sobel pass + inverted-hull | Inverted-hull + Sobel | **Inverted-hull only** | Thick CSS/SVG borders (`{spacing.ink-hair}`–`{spacing.ink-bold}`, `{colors.ink-outline}`) |
+| **Ink outline** | Sobel pass + inverted-hull | Inverted-hull + Sobel if headroom | **Inverted-hull only** | Thick CSS/SVG borders (`{spacing.ink}`–`{spacing.ink-bold}`, `{colors.ink-outline}`) |
 | **Halftone** | Full-density post-pass | Reduced density, baked-lean | Baked into gradientMap | SVG `<pattern>` at `{spacing.halftone-scale}` / coarse `{spacing.halftone-scale-coarse}` |
 | **Comic grain** | On (low-contrast) | **Off** (first drop) | Off | Off |
 | **Loot-beam / bloom** | Full selective | ½–¼ res | Off | Flat `{components.loot-callout}` chip, no glow |
 | **Particles / stars** | Full | Reduced | Minimal | Static SVG accents |
-| **Physics (post-MVP)** | 40 bodies | 20 | **0 (disabled ≤ Tier 1)** | 0 |
+| **Physics (post-MVP)** | 40 bodies | 20 | 8 | 0 |
 
-**Intra-postprocessing shed order (AD-13), derived from the tier table above (the table is ground truth):** `comic grain → halftone density → bloom (full→½–¼→off) → particles (full→reduced→minimal) → Sobel outline` → then the generic `DPR → LOD`. Particle caps step down (at Tier 2) **before** the Sobel pass drops (at Tier 1), and Sobel is guaranteed through Tier 2 (no "if headroom" hedge). Inverted-hull + toon ramp are geometry/material and are **never** on the shed list.
+**Intra-postprocessing shed order (AD-13):** `comic grain → halftone density → bloom (full→½–¼→off) → Sobel outline` → then the generic `particles → DPR → LOD`. Inverted-hull + toon ramp are geometry/material and are **never** on the shed list.
 
-**Auto-downgrade.** One `PerformanceMonitor` with hysteresis: avg FPS < 40 for > 2s drops one tier; recovery is gated so tiers don't oscillate. No other module downgrades quality. A **manual override** lets any visitor pin a tier or force the Static Timeline. When an auto-downgrade crosses the **Tier-1→Tier-0 boundary** the canvas is torn down (AD-9); exactly like a mid-session context loss, this hands off to the Static Timeline **anchored to the current Era with the equivalent panel re-opened** — never a jump to the top (one continuity contract shared with §6).
+**Auto-downgrade.** One `PerformanceMonitor` with hysteresis: avg FPS < 40 for > 2s drops one tier; recovery is gated so tiers don't oscillate. No other module downgrades quality. A **manual override** lets any visitor pin a tier or force the Static Timeline.
 
 **Reduced-Motion (orthogonal, but couples to surface via AD-9).** When the motion flag is off, the WebGL island is **not mounted** and the **Static Timeline is the rendered surface** — the spine forbids a mounted "still" canvas. The **cel aesthetic is never stripped**: the Static Timeline *is* the dialect rendered statically (thick borders, flat poster fills, hard offset shadows, static SVG halftone). So "keeps the cel look statically" is delivered concretely by tier-0 2D cel. The motion flag also zeroes tilt, parallax, idle-drift, physics, and any animated halftone/grain.
 
@@ -295,13 +295,13 @@ WCAG 2.2 AA is a **committed launch gate, not a floor** (plus 2.3.3 AAA via redu
 
 **Keyboard / focus.** Every Era is a real focusable `<button>/<a>` in logical DOM order, Enter/Space-activatable, firing the same navigation as a click — **never raycast-only.** Skip-link is the first tab stop → `<main>`. Heading order: `h1` (Jarad's name) → `h2` per Era. No keyboard trap in the canvas. Opening a panel moves focus in; closing restores focus to the trigger (AD-17).
 
-**Focus-not-obscured + dual-backdrop ring (WCAG 2.4.11).** Never `outline:none`. A visible ring rendered **above the canvas** via `{components.focus-ring}` — a teal core wrapped in a concentric ink+paper double outline — so one ring always clears the contrast floor on **both** bright-cloud and deep-space backdrops (not color-only). **Not-obscured is delivered by a concrete mechanism, not asserted:** every focusable target sets `scroll-margin` (and the scroll container sets `scroll-padding`) equal to the sticky-chrome insets — HUD corner, Timeline Rail edge, Detail-Panel column, mobile toggles — so a Tab-focused waypoint or rail entry always lands clear of fixed chrome; the Detail Panel and any fixed overlay must never cover the control that opened them. (Concrete behavioral acceptance criterion under Epic 4, Story 4.2.)
+**Focus-not-obscured + dual-backdrop ring (WCAG 2.4.11).** Never `outline:none`. A visible ring rendered **above the canvas** via `{components.focus-ring}` — a teal core wrapped in a concentric ink+paper double outline — so one ring always clears the contrast floor on **both** bright-cloud and deep-space backdrops (not color-only). The focused element is never obscured by chrome or scene.
 
 **Canvas semantics + SR era/year announcements.** The canvas is `aria-hidden` (decorative) or `role="img"` + `aria-labelledby` to visible DOM text. Current Era/year is exposed to assistive tech via a **polite ARIA live region**, announcing Era changes on **scroll-settle** and on **Waypoint arrival**. The "moving through time" cue is never visual-only; the Static Timeline conveys the same ordering.
 
-**Text contrast over dynamic backdrop (WCAG 1.4.3 / 1.4.11).** All persistent Truth-Layer text (HUD, Timeline Rail, panel chrome) holds the contrast floor against the worst-case backdrop across the full ascent — delivered by the cel plate (flat fill + ink border) per `{components.hud-telemetry}` / `{components.detail-panel}`, verified at the brightest (`clouds`) and darkest (`deep-space`) bands. The text-on-fill flip is **luminance-driven, not neon-driven**: bright bands take dark ink — the mid-tone `clouds` band and the neon summit alike — while dark bands take light `{colors.ink-primary}` (pairing rule in DESIGN.md §2/§7). Reading bodies never ride a saturated band fill; they sit on a sober plate (§2).
+**Text contrast over dynamic backdrop (WCAG 1.4.3 / 1.4.11).** All persistent Truth-Layer text (HUD, Timeline Rail, panel chrome) holds the contrast floor against the worst-case backdrop across the full ascent — delivered by the cel plate (flat fill + ink border) per `{components.hud-telemetry}` / `{components.detail-panel}`, verified at the brightest (`clouds`) and darkest (`deep-space`) bands. The neon fills demand ink text; dark bands demand light text (pairing rule in DESIGN.md §2/§7).
 
-**Touch targets.** Timeline Rail entries, waypoint controls, and mobile/ghost toggles reserve at least the `{spacing.tap-target}` hit area via transparent padding / `::before` hit-slop, decoupled from the small visual mark (the rail node and waypoint dot keep their look). This clears the **WCAG 2.5.8 (AA)** minimum with margin and meets the larger **WCAG 2.5.5 (AAA) / platform-HIG** comfort target.
+**Touch targets (WCAG 2.5.8).** Timeline Rail entries, waypoint controls, and mobile toggles present at least a comfortable ~44px hit area.
 
 **Reflow (WCAG 1.4.10) at 400%.** The pinned-canvas + overlay layout must not require 2-D scrolling of content.
 
@@ -321,11 +321,11 @@ WCAG 2.2 AA is a **committed launch gate, not a floor** (plus 2.3.3 AAA via redu
 
 **Desktop.** Full spectacle at the device's Fidelity Tier; pointer + wheel + keyboard navigation; corner-anchored chrome (HUD, Timeline Rail on one vertical edge, Detail Panel as a bounded reading column during the "hold").
 
-**Mobile / touch.** Simplified spectacle (Tier 1–2, reduced effects), touch navigation with momentum consistent with the scroll damping; holds the mobile frame budget or drops to the Static Timeline rather than stuttering. All content preserved. Touch targets reserve the `{spacing.tap-target}` hit area (§10). Chrome margins use `{spacing.margin-mobile}`; desktop uses `{spacing.margin-desktop}`; inter-column `{spacing.gutter}`.
+**Mobile / touch.** Simplified spectacle (Tier 1–2, reduced effects), touch navigation with momentum consistent with the scroll damping; holds the mobile frame budget or drops to the Static Timeline rather than stuttering. All content preserved. Touch targets meet WCAG 2.5.8. Chrome margins use `{spacing.margin-mobile}`; desktop uses `{spacing.margin-desktop}`; inter-column `{spacing.gutter}`.
 
 **Theme.** Dark is design-primary and the token baseline; the light `-light` sibling set ships for theme-awareness. A manual theme toggle (`{components.button-ghost}`) swaps the set; the cel dialect itself is theme-invariant — only fill/atmosphere tokens change. `forced-colors` / `prefers-contrast` handled on the DOM layer.
 
-**Performance envelope (AD-13).** First WebGL load < 6 MB (hard cap ~15 MB); draw calls ≤ 50 mobile / 100 desktop; triangles ≤ 500k; texture memory ≤ 256–384 MB mobile / ≤ 1 GB desktop. Inverted-hull is restricted to hero silhouettes; instanced stars/particles/tech-nodes get no per-object hull. **The pass cost is carried into the budget, not just geometry/texture bytes:** each hero's inverted-hull counts as **+1 draw call** against the cap, and the **maximum simultaneous full-screen post passes per tier** (Sobel + halftone + grain + bloom-composite at Tier 3, shedding per §9) is enumerated as a **fill-rate line in `perf-budget.json`** so the CI budget gate covers passes, not only bytes. Cel ramps and halftone patterns are small, tileable, shared modules — never per-era atlases.
+**Performance envelope (AD-13).** First WebGL load < 6 MB (hard cap ~15 MB); draw calls ≤ 50 mobile / 100 desktop; triangles ≤ 500k; texture memory ≤ 256–384 MB mobile / ≤ 1 GB desktop. Inverted-hull is restricted to hero silhouettes; instanced stars/particles/tech-nodes get no per-object hull. Cel ramps and halftone patterns are small, tileable, shared modules — never per-era atlases.
 
 ---
 
@@ -360,14 +360,14 @@ Five named protagonists. Each lands one explicit **climax beat** — the moment 
 ### Flow 1 — Dana, a technical recruiter *(north-star journey, UJ-1)*
 ~2 minutes, a dozen tabs open, biased toward closing anything slow or confusing. Arrives cold via a shared link, desktop, unauthenticated.
 - **Path:** The world loads on the ground — radio hardware, waveforms. Within 3–5s a diegetic one-line cue tells her she can scroll or jump. She scrolls; the camera climbs through time-themed eras. She notices the persistent Timeline Rail (`{components.timeline-rail}`) and a "Download résumé" affordance (`{components.button-primary}`). She clicks the top era ("AI") on the rail.
-- **CLIMAX:** The camera **launches** — accelerating past earlier eras, through clouds, into orbit — settling on the agentic-AI station as a Detail Panel (`{components.detail-panel}`) opens with real, readable text and links. *She gets it: the whole arc — ground to orbit — ending in AI.* Spectacle has resolved into a résumé.
+- **CLIMAX:** The camera **launches** — accelerating past earlier eras, through clouds, into orbit — settling on the agentic-AI station as a Detail Panel (`{components.detail-panel}`) opens with real, readable text and links. *She gets it: a quarter-century, ground to orbit, ending in AI.* Spectacle has resolved into a résumé.
 - **Resolution:** Downloads the résumé, clicks through to GitHub, flags Jarad for a callback.
 - **Edge case:** If the world can't render (old GPU / WebGL off), she sees the Static Timeline with the same facts and links and **never notices anything was missing.**
 
 ### Flow 2 — Marcus, a founder (drills for depth, UJ-2)
 Hiring a founding/staff engineer; wants proof of scale and systems thinking. Willing to spend 5+ minutes.
-- **Path:** Jumps to the **stratosphere (Justworks) waypoint**, opens artifact cards (TimeEngine, Payment Center, distributed systems), and follows the through-line filaments connecting a pattern here to an AI capability later; ascends to orbit and the Axioms of AI.
-- **CLIMAX:** He sees the **through-line rendered** — SagePoint's skill taxonomy → RAG; BAE's signal discipline → architecture → orchestration — carried in the single connective accent (`{colors.accent}`), and realizes the career wasn't a random walk: **it converged.** The one-hue color payoff *is* the argument.
+- **Path:** Jumps to the **stratosphere (Justworks) waypoint**, opens artifact cards (TimeEngine, Payment Center, distributed systems), and follows glowing Relationship Lines connecting a pattern here to an AI capability later; ascends to orbit and the Axioms of AI.
+- **CLIMAX:** He sees the **through-line rendered** — SagePoint's skill taxonomy → RAG; BAE's signal discipline → architecture → orchestration — carried in the connective accent (`{colors.accent}`), and realizes the career wasn't a random walk: **it converged.** The color payoff *is* the argument.
 - **Resolution:** Opens a project write-up (MDX) and a Medium essay in new tabs; reaches the contact affordance.
 - **Edge case:** Deep-linking a specific era via URL lands him directly at that waypoint with the panel open (camera **placed**, not launched), shareable to a co-founder.
 
