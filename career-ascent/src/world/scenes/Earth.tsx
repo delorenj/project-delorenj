@@ -5,8 +5,8 @@ import { tokens } from '../../design/tokens'
 
 // The 3D reveal: a real cel-shaded globe far below. Flat while it's off-camera; the moment
 // the rig pitches down near space, its curvature + atmosphere rim announce the third dimension.
-export const EARTH_CENTER: [number, number, number] = [0, -20, -6]
-const R = 34
+export const EARTH_CENTER: [number, number, number] = [0, -18, -6]
+const R = 48
 
 export function Earth() {
   const geo = useMemo(() => new THREE.SphereGeometry(R, 48, 32), [])

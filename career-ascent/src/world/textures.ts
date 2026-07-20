@@ -16,8 +16,9 @@ export function skyGradient(): THREE.Texture {
   c.width = 16; c.height = 640
   const g = c.getContext('2d')!
   const bands: Array<[number, string]> = [
-    [0.0, '#05070D'], [0.15, '#081428'], [0.3, '#0E2140'],
-    [0.46, '#173A63'], [0.62, '#26456E'], [0.8, '#3E3552'], [1.0, '#4A3326'],
+    [0.0, '#05070D'], [0.14, '#081428'], [0.28, '#0E2140'],
+    [0.44, '#173A63'], [0.6, '#26456E'], [0.74, '#3E3552'],
+    [0.85, '#6E4A46'], [0.93, '#B5623A'], [1.0, '#7C3F27'], // warm dusk horizon at the ground
   ]
   for (let i = 0; i < bands.length - 1; i++) {
     const y0 = bands[i][0] * c.height

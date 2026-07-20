@@ -27,7 +27,7 @@ export const ERAS: Era[] = [
   { slug: 'axioms', title: 'Axioms of AI', seq: 8, band: 5, years: 'the framework', blurb: 'Deep space: the axioms as orbital tablets — the framework built from the arc.', tech: ['axioms', 'orchestration'], shape: 'sphere' },
 ]
 
-export const SPACING = 9 // world units between sequence steps
+export const SPACING = 18 // world units between sequence steps (roomy — eras shouldn't collide)
 export const MAX_ALTITUDE = (ERAS.length - 1) * SPACING
 
 export function eraColor(e: Era) { return RAMP[e.band] }

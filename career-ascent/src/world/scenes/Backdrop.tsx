@@ -17,11 +17,11 @@ export function Backdrop() {
     const out: Array<{ pos: [number, number, number]; s: number; o: number }> = []
     let seed = 7
     const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff)
-    for (let i = 0; i < 10; i++) {
-      const y = 10 + rnd() * (MAX_ALTITUDE * 0.55)
-      const z = -12 - rnd() * 12
-      const x = (rnd() - 0.5) * 42
-      out.push({ pos: [x, y, z], s: 7 + rnd() * 7, o: 0.5 + rnd() * 0.35 })
+    for (let i = 0; i < 18; i++) {
+      const y = MAX_ALTITUDE * 0.16 + rnd() * (MAX_ALTITUDE * 0.55)
+      const z = -12 - rnd() * 14
+      const x = (rnd() - 0.5) * 48
+      out.push({ pos: [x, y, z], s: 8 + rnd() * 9, o: 0.5 + rnd() * 0.35 })
     }
     return out
   }, [])

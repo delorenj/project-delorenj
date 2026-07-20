@@ -33,8 +33,8 @@ function Experience() {
   return (
     <>
       <div className="stage"><GlobalCanvas /></div>
-      {/* scroll length: one viewport per sequence step gives the camera room to climb */}
-      <div className="spacer" style={{ height: `${ERAS.length * 100}vh` }} />
+      {/* scroll length: generous per-era so 25 years FEELS like a climb (tune VH_PER_ERA) */}
+      <div className="spacer" style={{ height: `${ERAS.length * 340}vh` }} />
       <Hud />
     </>
   )
