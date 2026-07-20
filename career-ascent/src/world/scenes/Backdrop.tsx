@@ -17,11 +17,12 @@ export function Backdrop() {
     const out: Array<{ pos: [number, number, number]; s: number; o: number }> = []
     let seed = 7
     const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff)
-    for (let i = 0; i < 18; i++) {
-      const y = MAX_ALTITUDE * 0.16 + rnd() * (MAX_ALTITUDE * 0.55)
-      const z = -12 - rnd() * 14
-      const x = (rnd() - 0.5) * 48
-      out.push({ pos: [x, y, z], s: 8 + rnd() * 9, o: 0.5 + rnd() * 0.35 })
+    // concentrated in the actual clouds band (roughly seq 3–5), not smeared into space
+    for (let i = 0; i < 15; i++) {
+      const y = MAX_ALTITUDE * 0.28 + rnd() * (MAX_ALTITUDE * 0.4)
+      const z = -11 - rnd() * 13
+      const x = (rnd() - 0.5) * 50
+      out.push({ pos: [x, y, z], s: 8 + rnd() * 9, o: 0.55 + rnd() * 0.35 })
     }
     return out
   }, [])
@@ -44,7 +45,8 @@ export function Backdrop() {
         {clouds.map((c, i) => (
           <mesh key={i} position={c.pos} scale={c.s}>
             <planeGeometry args={[2.6, 1]} />
-            <meshBasicMaterial map={cloud} transparent opacity={c.o} depthWrite={false} fog={false} />
+            {/* fog ENABLED: clouds recede + tint to sky as you climb above them */}
+            <meshBasicMaterial map={cloud} transparent opacity={c.o} depthWrite={false} />
           </mesh>
         ))}
       </group>
