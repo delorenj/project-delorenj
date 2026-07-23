@@ -2,10 +2,10 @@ import * as THREE from 'three'
 import { useMemo } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import gsap from 'gsap'
-import { CelMesh } from '../pipeline/CelMesh'
+import { SetPiece } from '../pipeline/SetPiece'
 import { Backdrop } from './Backdrop'
 import { Earth, EARTH_CENTER } from './Earth'
-import { ERAS, SPACING, MAX_ALTITUDE, eraColor, REVEAL_START, REVEAL_HOLD } from '../../data/world'
+import { ERAS, SPACING, MAX_ALTITUDE, eraColor, eraEmissive, REVEAL_START, REVEAL_HOLD } from '../../data/world'
 import { tokens } from '../../design/tokens'
 import { useWorld } from '../../state/store'
 
@@ -126,13 +126,14 @@ export function AscentScene() {
       {ERAS.map((e, i) => {
         const [x, z] = offsetFor(i)
         return (
-          <CelMesh
+          <SetPiece
             key={e.slug}
-            shape={e.shape}
+            kind={e.slug}
             color={eraColor(e)}
+            emissive={eraEmissive(e)}
             position={[x, e.seq * SPACING, z]}
-            scale={1.1 + (i % 3) * 0.25}
-            spin={0.15 + (i % 4) * 0.06}
+            scale={0.9 + (i % 3) * 0.18}
+            spin={0.14 + (i % 4) * 0.05}
           />
         )
       })}
