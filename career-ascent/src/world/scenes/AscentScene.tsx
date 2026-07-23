@@ -4,6 +4,7 @@ import { useThree, useFrame } from '@react-three/fiber'
 import gsap from 'gsap'
 import { SetPiece } from '../pipeline/SetPiece'
 import { Backdrop } from './Backdrop'
+import { DetailPanels } from './DetailPanels'
 import { Earth, EARTH_CENTER } from './Earth'
 import { ERAS, SPACING, MAX_ALTITUDE, eraColor, eraEmissive, REVEAL_START, REVEAL_HOLD } from '../../data/world'
 import { tokens } from '../../design/tokens'
@@ -137,6 +138,8 @@ export function AscentScene() {
           />
         )
       })}
+
+      <DetailPanels />
     </>
   )
 }
