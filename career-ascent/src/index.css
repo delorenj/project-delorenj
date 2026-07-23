@@ -54,6 +54,22 @@ a { color: inherit; }
 .hint { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%);
   font-family: var(--mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink3); }
 
+/* ambient-audio toggle — matches the tape/pane chrome */
+.audio { position: absolute; right: 22px; bottom: 22px; display: flex; align-items: center; gap: 8px;
+  background: color-mix(in srgb, var(--raised) 82%, transparent); border: 3px solid var(--ink);
+  border-radius: 6px; padding: 7px 11px; box-shadow: 4px 4px 0 var(--ink); cursor: pointer;
+  font-family: var(--mono); font-size: .6rem; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink3); }
+.audio.on { color: var(--accent); }
+.audio:hover { color: var(--ink1); }
+.audio .eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; }
+.audio .eq i { width: 3px; height: 4px; background: currentColor; border-radius: 1px; }
+.audio.on .eq i { animation: eq 0.9s ease-in-out infinite; }
+.audio.on .eq i:nth-child(2) { animation-delay: 0.18s; height: 11px; }
+.audio.on .eq i:nth-child(3) { animation-delay: 0.36s; height: 7px; }
+@keyframes eq { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { .audio.on .eq i { animation: none; } }
+
 /* ---------------- Bail-out (AD-7) ---------------- */
 .bailout { min-height: 100dvh; display: grid; place-items: center; padding: 24px;
   background: radial-gradient(120% 90% at 50% 0%, #10192b, var(--deep)); }

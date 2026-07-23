@@ -1,6 +1,25 @@
+import { useState } from 'react'
 import { useWorld } from '../state/store'
 import { ERAS, MAX_ALTITUDE, bandName } from '../data/world'
 import { jumpToEra } from '../scroll/useLenisScroll'
+import { audioBed } from '../audio/bed'
+
+// Ambient-audio toggle — the one thing on the HUD that makes sound, so it is explicit and
+// off by default (browsers block autoplay; the click is the required gesture).
+function AudioToggle() {
+  const [on, setOn] = useState(false)
+  return (
+    <button
+      className={on ? 'audio pane on' : 'audio pane'}
+      aria-pressed={on}
+      aria-label={on ? 'Mute ambient audio' : 'Play ambient audio'}
+      onClick={async () => setOn(await audioBed().toggle())}
+    >
+      <span className="eq" aria-hidden><i /><i /><i /></span>
+      <span className="lbl">{on ? 'SOUND' : 'MUTED'}</span>
+    </button>
+  )
+}
 
 // AD-10 in-world content projected from the World-Data core (not hardcoded).
 export function Hud() {
@@ -41,6 +60,8 @@ export function Hud() {
         ))}
         <span className="rail-cap bot">START ▼</span>
       </nav>
+
+      <AudioToggle />
 
       <div className="hint pane">Scroll up to ascend — up is later</div>
     </div>
