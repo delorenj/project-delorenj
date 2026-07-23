@@ -1,21 +1,30 @@
 import { useMemo } from 'react'
 import * as THREE from 'three'
 import { toonGradient } from '../pipeline/cel'
+import { earthGlow } from '../textures'
 import { tokens } from '../../design/tokens'
 
 // The 3D reveal: a real cel-shaded globe far below. Flat while it's off-camera; the moment
 // the rig pitches down near space, its curvature + atmosphere rim announce the third dimension.
-export const EARTH_CENTER: [number, number, number] = [0, -18, -6]
-const R = 48
+// Far below the entire ascent corridor so the camera is NEVER inside it — it only swings
+// into frame when the reveal pitches the camera down near space.
+export const EARTH_CENTER: [number, number, number] = [0, -150, -8]
+const R = 110
 
 export function Earth() {
   const geo = useMemo(() => new THREE.SphereGeometry(R, 48, 32), [])
+  const glow = useMemo(earthGlow, [])
   return (
     <group position={EARTH_CENTER}>
-      {/* atmosphere rim (flat, back-face) */}
-      <mesh scale={1.05}>
+      {/* atmosphere halo — additive aura; the globe depth-occludes its center,
+          leaving a soft graded rim of light outside the limb instead of a hard shell edge */}
+      <sprite scale={[R * 3.2, R * 3.2, 1]}>
+        <spriteMaterial map={glow} blending={THREE.AdditiveBlending} depthWrite={false} transparent fog={false} />
+      </sprite>
+      {/* tight atmosphere rim (flat, back-face) */}
+      <mesh scale={1.045}>
         <sphereGeometry args={[R, 48, 32]} />
-        <meshBasicMaterial color="#5AA6E6" side={THREE.BackSide} transparent opacity={0.45} fog={false} />
+        <meshBasicMaterial color="#5AA6E6" side={THREE.BackSide} transparent opacity={0.5} depthWrite={false} fog={false} />
       </mesh>
       {/* toon globe */}
       <mesh geometry={geo}>

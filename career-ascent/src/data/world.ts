@@ -30,6 +30,11 @@ export const ERAS: Era[] = [
 export const SPACING = 18 // world units between sequence steps (roomy — eras shouldn't collide)
 export const MAX_ALTITUDE = (ERAS.length - 1) * SPACING
 
+// The reveal beat: pitch-down starts at REVEAL_START, the composition is fully settled by
+// REVEAL_HOLD, and the remaining scroll HOLDS the Earth shot (slow drift only, so it breathes).
+export const REVEAL_START = 0.66
+export const REVEAL_HOLD = 0.92
+
 export function eraColor(e: Era) { return RAMP[e.band] }
 export function eraEmissive(e: Era) { return EMISSIVE[e.band] }
 export function bandName(e: Era) { return BAND_NAMES[e.band] }

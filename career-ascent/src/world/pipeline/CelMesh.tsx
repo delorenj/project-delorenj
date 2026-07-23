@@ -4,6 +4,7 @@ import { useFrame } from '@react-three/fiber'
 import { toonGradient } from './cel'
 import { tokens } from '../../design/tokens'
 import { useWorld } from '../../state/store'
+import { MAX_ALTITUDE, SPACING, REVEAL_START, REVEAL_HOLD } from '../../data/world'
 import type { Shape } from '../../data/world'
 
 // AD-6 the cel pipeline, part 2: every set-piece is a toon-shaded mesh wrapped in an
@@ -38,19 +39,32 @@ export function CelMesh({
 }) {
   const geo = useMemo(() => makeGeo(shape), [shape])
   const ref = useRef<THREE.Group>(null)
+  const bodyMat = useRef<THREE.MeshToonMaterial>(null)
+  const inkMat = useRef<THREE.MeshBasicMaterial>(null)
 
   useFrame((_, dt) => {
-    if (!ref.current) return
-    if (spin && !useWorld.getState().reducedMotion) ref.current.rotation.y += spin * dt
+    const g = ref.current
+    if (!g) return
+    const { progress, reducedMotion } = useWorld.getState()
+    if (spin && !reducedMotion) g.rotation.y += spin * dt
+    // the reveal declutters: as the camera pitches down to Earth, set-pieces below the top
+    // of the corridor melt away so they don't read as debris floating over the globe
+    // (fade finishes ahead of the pitch so no half-ghosts linger over the Earth shot)
+    const t = THREE.MathUtils.clamp((progress - REVEAL_START) / ((REVEAL_HOLD - REVEAL_START) * 0.65), 0, 1)
+    const below = THREE.MathUtils.clamp((MAX_ALTITUDE - SPACING * 0.5 - position[1]) / (SPACING * 0.5), 0, 1)
+    const fade = 1 - t * below
+    g.visible = fade > 0.02
+    if (bodyMat.current) bodyMat.current.opacity = fade
+    if (inkMat.current) inkMat.current.opacity = fade
   })
 
   return (
     <group ref={ref} position={position} scale={scale}>
       <mesh geometry={geo}>
-        <meshToonMaterial color={color} gradientMap={toonGradient()} />
+        <meshToonMaterial ref={bodyMat} color={color} gradientMap={toonGradient()} transparent />
       </mesh>
       <mesh geometry={geo} scale={1 + outline}>
-        <meshBasicMaterial color={tokens.ink} side={THREE.BackSide} />
+        <meshBasicMaterial ref={inkMat} color={tokens.ink} side={THREE.BackSide} transparent />
       </mesh>
     </group>
   )

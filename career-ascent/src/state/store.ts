@@ -24,3 +24,6 @@ export const useWorld = create<WorldState>((set) => ({
   },
   setReducedMotion: (v) => set({ reducedMotion: v }),
 }))
+
+// debug hook: lets a headless harness drive scroll position for screenshots
+if (typeof window !== 'undefined') (window as unknown as { __world: typeof useWorld }).__world = useWorld

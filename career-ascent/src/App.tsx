@@ -15,6 +15,8 @@ export default function App() {
 
   useEffect(() => {
     let alive = true
+    // debug bypass: ?force skips the capability gate (lets a software-GL headless render the world)
+    if (new URLSearchParams(location.search).has('force')) { setPhase('run'); return }
     canRun().then((r) => {
       if (!alive) return
       setReason(r.reason)

@@ -5,7 +5,7 @@ import { AscentScene } from './scenes/AscentScene'
 export function GlobalCanvas() {
   return (
     <Canvas
-      camera={{ position: [0, 0, 12], fov: 55, near: 0.1, far: 250 }}
+      camera={{ position: [0, 0, 12], fov: 55, near: 0.1, far: 900 }}
       dpr={[1, 2]}
       frameloop="always"
       gl={{ antialias: true, powerPreference: 'high-performance' }}

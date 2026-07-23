@@ -1,17 +1,16 @@
 import * as THREE from 'three'
 import { useMemo } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
+import gsap from 'gsap'
 import { CelMesh } from '../pipeline/CelMesh'
 import { Backdrop } from './Backdrop'
 import { Earth, EARTH_CENTER } from './Earth'
-import { ERAS, SPACING, MAX_ALTITUDE, eraColor } from '../../data/world'
+import { ERAS, SPACING, MAX_ALTITUDE, eraColor, REVEAL_START, REVEAL_HOLD } from '../../data/world'
 import { tokens } from '../../design/tokens'
 import { useWorld } from '../../state/store'
 
 const EARTH_V = new THREE.Vector3(...EARTH_CENTER)
 
-// Sky/fog color by altitude: warm dusk on the ground → deep space up top.
-// This is what keeps the prologue from reading as a black void.
 const SKY_STOPS = ['#2A2130', '#3A2C4A', '#28406A', '#173A63', '#0E2140', '#070E1C', '#05070D'].map(
   (c) => new THREE.Color(c),
 )
@@ -39,20 +38,51 @@ function Atmosphere() {
   return null
 }
 
-// Climb the Career Sequence looking flat at the 2D parallax layers, then in the top ~24%
-// pitch down toward the 3D Earth — the reveal.
+// The camera as a scrubbable GSAP timeline: eased climb that settles into each era, a subtle
+// bank toward each set-piece, and the reveal as a deliberate power-curve beat at the top.
+function buildTimeline(rig: { alt: number; dolly: number; pitch: number; roll: number; fov: number }) {
+  const N = ERAS.length
+  const seg = 1 / (N - 1)
+  const tl = gsap.timeline({ paused: true })
+
+  // altitude — hit each era at its scroll-time, eased so the camera decelerates on arrival
+  for (let i = 1; i < N; i++) {
+    tl.to(rig, { alt: i * SPACING, duration: seg, ease: 'power1.inOut' }, (i - 1) * seg)
+  }
+  // bank toward each era's set-piece as you pass it, settle before the reveal
+  for (let i = 1; i <= 5; i++) {
+    const side = i % 2 === 0 ? -1 : 1
+    tl.to(rig, { roll: side * 0.05, duration: seg * 0.5, ease: 'sine.inOut' }, i * seg - seg * 0.25)
+    tl.to(rig, { roll: 0, duration: seg * 0.5, ease: 'sine.inOut' }, i * seg + seg * 0.25)
+  }
+  // gentle FOV settle through the atmosphere
+  tl.to(rig, { fov: 54, duration: REVEAL_START, ease: 'sine.inOut' }, 0)
+  // THE REVEAL — pitch down to Earth, dolly back, punch the FOV wide, settled by REVEAL_HOLD…
+  tl.to(rig, { pitch: 1, duration: REVEAL_HOLD - REVEAL_START, ease: 'power3.inOut' }, REVEAL_START)
+  tl.to(rig, { dolly: 30, duration: REVEAL_HOLD - REVEAL_START, ease: 'power2.inOut' }, REVEAL_START)
+  tl.to(rig, { fov: 66, duration: REVEAL_HOLD - REVEAL_START, ease: 'power2.out' }, REVEAL_START)
+  // …then HOLD the beat: the composition stays put and just breathes on a slow drift back
+  tl.to(rig, { dolly: 33.5, duration: 1 - REVEAL_HOLD, ease: 'sine.out' }, REVEAL_HOLD)
+  return tl
+}
+
 function Rig() {
-  const { camera } = useThree()
+  const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera
+  const { rig, tl } = useMemo(() => {
+    const r = { alt: 0, dolly: 13, pitch: 0, roll: 0, fov: 58 }
+    return { rig: r, tl: buildTimeline(r) }
+  }, [])
   const base = useMemo(() => new THREE.Vector3(), [])
   const look = useMemo(() => new THREE.Vector3(), [])
+
   useFrame(() => {
-    const p = useWorld.getState().progress
-    const y = p * MAX_ALTITUDE
-    const t = THREE.MathUtils.smoothstep(p, 0.76, 1.0)
-    camera.position.set(0, y + t * 12, 12 + t * 12)
-    base.set(0, y + 4, -12)
-    look.copy(base).lerp(EARTH_V, t)
+    tl.progress(THREE.MathUtils.clamp(useWorld.getState().progress, 0, 1))
+    camera.position.set(0, rig.alt + rig.pitch * 6, rig.dolly)
+    base.set(0, rig.alt + 4, -12)
+    look.copy(base).lerp(EARTH_V, rig.pitch)
+    camera.up.set(Math.sin(rig.roll), Math.cos(rig.roll), 0)
     camera.lookAt(look)
+    if (camera.fov !== rig.fov) { camera.fov = rig.fov; camera.updateProjectionMatrix() }
   })
   return null
 }
@@ -84,11 +114,9 @@ export function AscentScene() {
     <>
       <Atmosphere />
       <Rig />
-      {/* never let the ground go black */}
       <hemisphereLight args={['#8FB0D6', '#5A3A2E', 0.6]} />
       <ambientLight intensity={0.8} />
       <directionalLight position={[8, 22, 10]} intensity={2.1} />
-      {/* warm dusk fill that only reaches the launchpad — Origins glows */}
       <pointLight position={[0, 4, 7]} intensity={90} distance={60} decay={2} color="#FFB27A" />
 
       <Backdrop />

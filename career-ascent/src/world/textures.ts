@@ -29,18 +29,56 @@ export function skyGradient(): THREE.Texture {
   return toTexture(c)
 }
 
-// A soft cel cloud clump (flat fills + ink underline), transparent background.
+// A crisp cel cloud clump: ink silhouette outline, flat body, ONE stepped shade band,
+// ONE flat crown highlight, hard flat base — comic-panel clouds, not photographic mist.
 export function cloudSprite(): THREE.Texture {
   const c = document.createElement('canvas')
   c.width = 512; c.height = 192
   const g = c.getContext('2d')!
   const puffs: Array<[number, number, number]> = [
-    [140, 130, 70], [220, 110, 95], [320, 128, 80], [400, 138, 60], [255, 150, 110],
+    [140, 128, 66], [222, 106, 88], [318, 124, 76], [398, 136, 56], [258, 148, 102],
   ]
-  g.fillStyle = '#C7D6E2'
-  for (const [x, y, r] of puffs) { g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill() }
-  g.fillStyle = '#9FB2C4'
-  for (const [x, y, r] of puffs) { g.beginPath(); g.arc(x, y + r * 0.35, r * 0.9, 0, Math.PI); g.fill() }
+  const BASE = 168
+  const path = (grow = 0) => {
+    g.beginPath()
+    for (const [x, y, r] of puffs) { g.moveTo(x + r + grow, y); g.arc(x, y, r + grow, 0, Math.PI * 2) }
+  }
+  // ink silhouette first — everything else sits inside it, so it reads as the outline
+  g.fillStyle = '#0A0E16'
+  path(7); g.fill()
+  g.clearRect(0, BASE, c.width, c.height - BASE) // hard flat base
+  // flat body, cut short of the base so the ink shows as an underline
+  g.save()
+  g.beginPath(); g.rect(0, 0, c.width, BASE - 6); g.clip()
+  g.fillStyle = '#D9E4EF'
+  path(); g.fill()
+  path(); g.clip() // confine the shading steps to the body
+  g.fillStyle = '#A7BACD'
+  g.beginPath()
+  for (const [x, y, r] of puffs) { g.moveTo(x + r * 0.88, y + r * 0.42); g.arc(x, y + r * 0.42, r * 0.88, 0, Math.PI * 2) }
+  g.fill()
+  g.fillStyle = '#F2F7FC'
+  g.beginPath()
+  for (const [x, y, r] of puffs) { g.moveTo(x - r * 0.12 + r * 0.5, y - r * 0.34); g.arc(x - r * 0.12, y - r * 0.34, r * 0.5, 0, Math.PI * 2) }
+  g.fill()
+  g.restore()
+  return toTexture(c)
+}
+
+// Atmosphere halo for the Earth reveal — a radial aura the globe occludes from the center,
+// leaving a soft rim of light outside the limb. The one permitted glow of the deep-space band.
+export function earthGlow(): THREE.Texture {
+  const c = document.createElement('canvas')
+  c.width = 256; c.height = 256
+  const g = c.getContext('2d')!
+  const rg = g.createRadialGradient(128, 128, 0, 128, 128, 128)
+  rg.addColorStop(0, 'rgba(122,180,240,0.85)')
+  rg.addColorStop(0.55, 'rgba(110,170,235,0.65)')
+  rg.addColorStop(0.66, 'rgba(88,150,225,0.38)')
+  rg.addColorStop(0.8, 'rgba(58,110,195,0.14)')
+  rg.addColorStop(1, 'rgba(40,80,160,0)')
+  g.fillStyle = rg
+  g.fillRect(0, 0, 256, 256)
   return toTexture(c)
 }
 
