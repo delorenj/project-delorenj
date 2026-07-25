@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import gsap from 'gsap'
 import { SetPiece } from '../pipeline/SetPiece'
@@ -12,6 +12,7 @@ import { tokens } from '../../design/tokens'
 import { useWorld } from '../../state/store'
 
 const EARTH_V = new THREE.Vector3(...EARTH_CENTER)
+const N = ERAS.length
 
 const SKY_STOPS = ['#2A2130', '#3A2C4A', '#28406A', '#173A63', '#0E2140', '#070E1C', '#05070D'].map(
   (c) => new THREE.Color(c),
@@ -79,23 +80,83 @@ function buildTimeline(rig: { alt: number; dolly: number; pitch: number; roll: n
   return tl
 }
 
+// The grand arrival: when you settle at a waypoint the camera cranes up off the corridor and
+// tilts down to a slow, slightly-overhead survey of that era's diorama — a "you've reached a new
+// area" beat — then eases back to the climb when you scroll on. It's an ADDITIVE, non-scrubbed
+// flourish (a GSAP tween on `s`) layered over the scroll-scrubbed pose, so s=0 is exactly the
+// climb. Suppressed for reduced-motion and during the Earth reveal.
 function Rig() {
   const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera
   const { rig, tl } = useMemo(() => {
     const r = { alt: 0, dolly: 13, pitch: 0, roll: 0, fov: 58 }
     return { rig: r, tl: buildTimeline(r) }
   }, [])
-  const base = useMemo(() => new THREE.Vector3(), [])
+  const basePos = useMemo(() => new THREE.Vector3(), [])
+  const baseLook = useMemo(() => new THREE.Vector3(), [])
+  const surveyPos = useMemo(() => new THREE.Vector3(), [])
+  const surveyLook = useMemo(() => new THREE.Vector3(), [])
   const look = useMemo(() => new THREE.Vector3(), [])
+  const survey = useRef({ lastP: 0, dwell: 0, surveyed: -1, s: 0, anim: null as gsap.core.Animation | null })
 
-  useFrame(() => {
-    tl.progress(THREE.MathUtils.clamp(useWorld.getState().progress, 0, 1))
-    camera.position.set(0, rig.alt + rig.pitch * 6, rig.dolly)
-    base.set(0, rig.alt + 4, -12)
-    look.copy(base).lerp(EARTH_V, rig.pitch)
-    camera.up.set(Math.sin(rig.roll), Math.cos(rig.roll), 0)
-    camera.lookAt(look)
-    if (camera.fov !== rig.fov) { camera.fov = rig.fov; camera.updateProjectionMatrix() }
+  useFrame((_, dt) => {
+    const p = THREE.MathUtils.clamp(useWorld.getState().progress, 0, 1)
+    const reduced = useWorld.getState().reducedMotion
+    tl.progress(p)
+
+    // ---- arrival survey: trigger on dwell at a waypoint ----
+    const S = survey.current
+    const active = Math.round(p * (N - 1))
+    const parked = Math.abs(p - active / (N - 1)) < 0.035
+    const vel = dt > 0 ? Math.abs(p - S.lastP) / dt : 0
+    S.lastP = p
+    if (!reduced) {
+      if (vel < 0.02) {
+        S.dwell += dt
+      } else {
+        S.dwell = 0
+        S.surveyed = -1
+        if (S.s > 0.001) { S.anim?.kill(); S.anim = gsap.to(S, { s: 0, duration: 0.5, ease: 'power2.out', overwrite: true }) }
+      }
+      const canSurvey = parked && p < REVEAL_START - 0.02
+      if (canSurvey && S.dwell > 0.4 && active !== S.surveyed) {
+        S.surveyed = active
+        S.anim?.kill()
+        S.anim = gsap.timeline()
+          .to(S, { s: 1, duration: 1.3, ease: 'power2.inOut' })
+          .to(S, { s: 1, duration: 0.8 })
+          .to(S, { s: 0, duration: 1.4, ease: 'power2.inOut' })
+      }
+    }
+
+    // ---- base (scroll) pose ----
+    basePos.set(0, rig.alt + rig.pitch * 6, rig.dolly)
+    baseLook.set(0, rig.alt + 4, -12).lerp(EARTH_V, rig.pitch)
+
+    // debug: a headless harness can force the survey amount to render a controlled sweep
+    const forced = (window as unknown as { __forceSurvey?: number }).__forceSurvey
+    const surveyEra = typeof forced === 'number' ? active : active
+    const s = typeof forced === 'number' ? forced : S.s
+    if (s > 0.0001) {
+      // survey pose: craned up and close over the active diorama, tilted down onto it so the set
+      // fills the frame — the "you've reached a new area" establishing shot.
+      const [dx, dz] = offsetFor(surveyEra)
+      const dy = surveyEra * SPACING
+      const orbit = Math.sin(performance.now() * 0.00045) * 1.1 * s
+      // swoop forward-and-up to a close 3/4 overhead so the set fills the frame
+      surveyPos.set(dx + 1.35 + orbit, dy + 3.3, dz + 3.6)
+      surveyLook.set(dx, dy + 0.3, dz)
+      camera.position.lerpVectors(basePos, surveyPos, s)
+      look.lerpVectors(baseLook, surveyLook, s)
+      camera.up.set(0, 1, 0)
+      camera.lookAt(look)
+      const fov = THREE.MathUtils.lerp(rig.fov, 40, s)
+      if (camera.fov !== fov) { camera.fov = fov; camera.updateProjectionMatrix() }
+    } else {
+      camera.position.copy(basePos)
+      camera.up.set(Math.sin(rig.roll), Math.cos(rig.roll), 0)
+      camera.lookAt(baseLook)
+      if (camera.fov !== rig.fov) { camera.fov = rig.fov; camera.updateProjectionMatrix() }
+    }
   })
   return null
 }
