@@ -22,14 +22,19 @@ function toneColor(tone: Tone, color: string, emissive: string): string {
   }
 }
 
+// glow parts push past 1.0 (toneMapped off) so the bloom pass — and only the bloom pass —
+// picks them up; the multiplier sets how hard each one flares.
+const GLOW_HDR = 2.3
+
 function PartMesh({ part, color, emissive, outline }: { part: Part; color: string; emissive: string; outline: number }) {
   const col = toneColor(part.tone, color, emissive)
   const rot = part.rot ?? [0, 0, 0]
   const pos = part.pos ?? [0, 0, 0]
+  const glow = useMemo(() => new THREE.Color(col).multiplyScalar(GLOW_HDR), [col])
   if (part.tone === 'glow') {
     return (
       <mesh geometry={part.geo} position={pos} rotation={rot}>
-        <meshBasicMaterial color={col} transparent fog={false} />
+        <meshBasicMaterial color={glow} toneMapped={false} transparent fog={false} />
       </mesh>
     )
   }

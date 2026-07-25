@@ -68,18 +68,25 @@ export function cloudSprite(): THREE.Texture {
 // Atmosphere halo for the Earth reveal — a radial aura the globe occludes from the center,
 // leaving a soft rim of light outside the limb. The one permitted glow of the deep-space band.
 export function earthGlow(): THREE.Texture {
+  const S = 512
   const c = document.createElement('canvas')
-  c.width = 256; c.height = 256
+  c.width = S; c.height = S
   const g = c.getContext('2d')!
-  const rg = g.createRadialGradient(128, 128, 0, 128, 128, 128)
-  rg.addColorStop(0, 'rgba(122,180,240,0.85)')
-  rg.addColorStop(0.55, 'rgba(110,170,235,0.65)')
-  rg.addColorStop(0.66, 'rgba(88,150,225,0.38)')
-  rg.addColorStop(0.8, 'rgba(58,110,195,0.14)')
-  rg.addColorStop(1, 'rgba(40,80,160,0)')
+  // many close stops → a smooth ramp the bloom pass can spread without banding
+  const rg = g.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2)
+  rg.addColorStop(0.0, 'rgba(122,180,240,0.82)')
+  rg.addColorStop(0.45, 'rgba(112,172,236,0.66)')
+  rg.addColorStop(0.58, 'rgba(96,158,228,0.46)')
+  rg.addColorStop(0.7, 'rgba(74,132,212,0.26)')
+  rg.addColorStop(0.82, 'rgba(56,106,190,0.12)')
+  rg.addColorStop(0.92, 'rgba(44,86,168,0.04)')
+  rg.addColorStop(1.0, 'rgba(40,80,160,0)')
   g.fillStyle = rg
-  g.fillRect(0, 0, 256, 256)
-  return toTexture(c)
+  g.fillRect(0, 0, S, S)
+  const t = toTexture(c)
+  t.minFilter = THREE.LinearMipmapLinearFilter
+  t.generateMipmaps = true
+  return t
 }
 
 // Origins: black mountain range + a distant city skyline with a few lit windows.

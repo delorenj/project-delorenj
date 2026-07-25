@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import gsap from 'gsap'
 import { SetPiece } from '../pipeline/SetPiece'
+import { Post } from '../pipeline/Post'
 import { Backdrop } from './Backdrop'
 import { DetailPanels } from './DetailPanels'
 import { Earth, EARTH_CENTER } from './Earth'
@@ -140,6 +141,7 @@ export function AscentScene() {
       })}
 
       <DetailPanels />
+      <Post />
     </>
   )
 }
