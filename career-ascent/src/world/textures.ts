@@ -29,38 +29,49 @@ export function skyGradient(): THREE.Texture {
   return toTexture(c)
 }
 
-// A crisp cel cloud clump: ink silhouette outline, flat body, ONE stepped shade band,
-// ONE flat crown highlight, hard flat base — comic-panel clouds, not photographic mist.
+// A bold hand-drawn cumulus: thick ink silhouette, lavender/periwinkle flat fills, stepped
+// purple shade, near-white crown, and internal ink lobe-lines where the puffs overlap — the
+// chunky comic-book cloud of the reference art, not a soft photographic puff.
+const CLOUD_INK = '#141026'
 export function cloudSprite(): THREE.Texture {
   const c = document.createElement('canvas')
-  c.width = 512; c.height = 192
+  c.width = 512; c.height = 232
   const g = c.getContext('2d')!
   const puffs: Array<[number, number, number]> = [
-    [140, 128, 66], [222, 106, 88], [318, 124, 76], [398, 136, 56], [258, 148, 102],
+    [118, 160, 62], [200, 118, 86], [296, 126, 92], [382, 152, 64], [250, 168, 104],
   ]
-  const BASE = 168
-  const path = (grow = 0) => {
+  const BASE = 206
+  const union = (grow = 0) => {
     g.beginPath()
     for (const [x, y, r] of puffs) { g.moveTo(x + r + grow, y); g.arc(x, y, r + grow, 0, Math.PI * 2) }
   }
-  // ink silhouette first — everything else sits inside it, so it reads as the outline
-  g.fillStyle = '#0A0E16'
-  path(7); g.fill()
+  // thick ink silhouette — the bold outline
+  g.fillStyle = CLOUD_INK
+  union(14); g.fill()
   g.clearRect(0, BASE, c.width, c.height - BASE) // hard flat base
-  // flat body, cut short of the base so the ink shows as an underline
   g.save()
-  g.beginPath(); g.rect(0, 0, c.width, BASE - 6); g.clip()
-  g.fillStyle = '#D9E4EF'
-  path(); g.fill()
-  path(); g.clip() // confine the shading steps to the body
-  g.fillStyle = '#A7BACD'
+  g.beginPath(); g.rect(0, 0, c.width, BASE - 9); g.clip() // keep fills off the base ink
+  // lavender body
+  g.fillStyle = '#CBCFEE'
+  union(); g.fill()
+  union(); g.clip() // confine shading + lobe lines to the body
+  // stepped periwinkle underside
+  g.fillStyle = '#9BA0D4'
   g.beginPath()
-  for (const [x, y, r] of puffs) { g.moveTo(x + r * 0.88, y + r * 0.42); g.arc(x, y + r * 0.42, r * 0.88, 0, Math.PI * 2) }
+  for (const [x, y, r] of puffs) { g.moveTo(x + r * 0.9, y + r * 0.5); g.arc(x, y + r * 0.5, r * 0.9, 0, Math.PI * 2) }
   g.fill()
-  g.fillStyle = '#F2F7FC'
+  g.fillStyle = '#7C82BC'
   g.beginPath()
-  for (const [x, y, r] of puffs) { g.moveTo(x - r * 0.12 + r * 0.5, y - r * 0.34); g.arc(x - r * 0.12, y - r * 0.34, r * 0.5, 0, Math.PI * 2) }
+  for (const [x, y, r] of puffs) { g.moveTo(x + r * 0.85, y + r * 0.92); g.arc(x, y + r * 0.92, r * 0.85, 0, Math.PI * 2) }
   g.fill()
+  // near-white crown highlight on the top lobes
+  g.fillStyle = '#EFF0FF'
+  g.beginPath()
+  for (const [x, y, r] of puffs) { g.moveTo(x - r * 0.14 + r * 0.5, y - r * 0.4); g.arc(x - r * 0.14, y - r * 0.4, r * 0.5, 0, Math.PI * 2) }
+  g.fill()
+  // internal lobe lines — thick ink arcs on each puff's lower boundary
+  g.strokeStyle = CLOUD_INK; g.lineWidth = 7; g.lineCap = 'round'
+  for (const [x, y, r] of puffs) { g.beginPath(); g.arc(x, y, r - 3, 0.12 * Math.PI, 0.88 * Math.PI); g.stroke() }
   g.restore()
   return toTexture(c)
 }

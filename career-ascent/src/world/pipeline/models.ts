@@ -99,13 +99,17 @@ function build(kind: string): Part[] {
       return [
         ...deskBase(),
         // oscilloscope, sitting on the desk (left)
-        { geo: box(1.15, 0.82, 0.62), tone: 'body', pos: [-0.42, -0.27, 0.02] },
-        { geo: box(0.78, 0.56, 0.08), tone: 'dark', pos: [-0.48, -0.24, 0.34] },
-        { geo: box(0.62, 0.42, 0.05), tone: 'glow', pos: [-0.48, -0.24, 0.39], outline: false }, // green trace
-        { geo: cyl(0.04, 0.04, 0.8, 10), tone: 'accent', pos: [-0.05, 0.5, -0.05] }, // antenna
-        { geo: sph(0.07, 10, 8), tone: 'glow', pos: [-0.05, 0.94, -0.05], outline: false },
-        { geo: cyl(0.08, 0.08, 0.09, 12), tone: 'accent', pos: [-0.66, -0.6, 0.34], rot: [HALF_PI, 0, 0] }, // knobs
-        { geo: cyl(0.08, 0.08, 0.09, 12), tone: 'accent', pos: [-0.28, -0.6, 0.34], rot: [HALF_PI, 0, 0] },
+        { geo: box(1.2, 0.84, 0.64), tone: 'body', pos: [-0.38, -0.27, 0.02] }, // olive chassis
+        { geo: box(0.66, 0.56, 0.08), tone: 'dark', pos: [-0.56, -0.24, 0.35] }, // screen bezel
+        { geo: box(0.5, 0.42, 0.05), tone: 'glow', pos: [-0.56, -0.24, 0.4], outline: false }, // lime trace
+        { geo: cyl(0.15, 0.15, 0.07, 20), tone: 'dark', pos: [-0.05, -0.22, 0.35], rot: [HALF_PI, 0, 0] }, // dial ring
+        { geo: cyl(0.11, 0.11, 0.05, 20), tone: 'glow', pos: [-0.05, -0.22, 0.39], rot: [HALF_PI, 0, 0], outline: false }, // lime dial
+        { geo: cyl(0.04, 0.04, 0.8, 10), tone: 'accent', pos: [0.05, 0.5, -0.05] }, // antenna
+        { geo: sph(0.07, 10, 8), tone: 'glow', pos: [0.05, 0.94, -0.05], outline: false }, // antenna tip
+        { geo: cyl(0.035, 0.045, 0.18, 10), tone: 'accent', pos: [-0.72, 0.24, 0.08] }, // top post
+        { geo: cyl(0.035, 0.045, 0.18, 10), tone: 'accent', pos: [-0.56, 0.24, 0.08] }, // top post
+        { geo: cyl(0.08, 0.08, 0.09, 12), tone: 'accent', pos: [-0.66, -0.62, 0.35], rot: [HALF_PI, 0, 0] }, // knobs
+        { geo: cyl(0.08, 0.08, 0.09, 12), tone: 'accent', pos: [-0.3, -0.62, 0.35], rot: [HALF_PI, 0, 0] },
         // desk lamp (right)
         ...deskLamp(0.82, -0.12),
         // coffee mug

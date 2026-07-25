@@ -66,7 +66,7 @@ export function SetPiece({
   emissive,
   position,
   scale = 1,
-  outline = 0.05,
+  outline = 0.08,
   spin = 0.2,
 }: {
   kind: string

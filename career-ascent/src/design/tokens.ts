@@ -15,10 +15,12 @@ export const tokens = {
 } as const
 
 // Six-band grit -> neon ramp (chroma climbs with altitude). Index 0=ground .. 5=deep-space.
-export const RAMP = ['#64564C', '#5B6B7A', '#6E8296', '#3E6B72', '#12E0C8', '#FF3D9A'] as const
+// Band 0 is military olive-drab — the radio-era field-gear look.
+export const RAMP = ['#6E7247', '#5B6B7A', '#6E8296', '#3E6B72', '#12E0C8', '#FF3D9A'] as const
 
 // Per-band diegetic emissive accent (the one "glow" allowed in each band).
-export const EMISSIVE = ['#7CF06E', '#2FBBD6', '#43D6C4', '#4FE3D2', '#B9FFF4', '#B14BFF'] as const
+// Band 0 is an acid-lime — the glowing field-radio screen/dial of the reference art.
+export const EMISSIVE = ['#AEE818', '#2FBBD6', '#43D6C4', '#4FE3D2', '#B9FFF4', '#B14BFF'] as const
 
 export const BAND_NAMES = [
   'ground', 'low-atmosphere', 'clouds', 'stratosphere', 'orbit', 'deep-space',

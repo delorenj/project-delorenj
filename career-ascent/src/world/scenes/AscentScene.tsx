@@ -14,7 +14,7 @@ import { useWorld } from '../../state/store'
 const EARTH_V = new THREE.Vector3(...EARTH_CENTER)
 const N = ERAS.length
 
-const SKY_STOPS = ['#2A2130', '#3A2C4A', '#28406A', '#173A63', '#0E2140', '#070E1C', '#05070D'].map(
+const SKY_STOPS = ['#2A2130', '#3A2C4A', '#343A78', '#232F6A', '#0E2140', '#070E1C', '#05070D'].map(
   (c) => new THREE.Color(c),
 )
 function skyColorAt(p: number, out: THREE.Color) {
