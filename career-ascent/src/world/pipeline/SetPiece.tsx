@@ -79,11 +79,22 @@ export function SetPiece({
 }) {
   const parts = useMemo(() => setPieceParts(kind), [kind])
   const ref = useRef<THREE.Group>(null)
+  // this piece's location along the scroll, for distance culling
+  const pieceP = position[1] / MAX_ALTITUDE
 
   useFrame((_, dt) => {
     const g = ref.current
     if (!g) return
     const { progress, reducedMotion } = useWorld.getState()
+
+    // LOD/cull: pieces well outside the current view band aren't drawn, don't spin, and — since
+    // their glow is hidden — don't feed the bloom pass. Frustum culling already skips off-screen
+    // draws; this also kills the per-frame churn and bright pixels for far pieces.
+    if (Math.abs(progress - pieceP) > 0.24) {
+      if (g.visible) g.visible = false
+      return
+    }
+
     if (spin && !reducedMotion) g.rotation.y += spin * dt
     // reveal declutter — set-pieces below the corridor top fade out as the camera pitches to
     // Earth (fade completes ahead of the pitch so no half-ghosts hang over the globe).

@@ -9,6 +9,7 @@ export function Post() {
     <EffectComposer multisampling={4}>
       <Bloom
         mipmapBlur
+        levels={6}
         intensity={0.9}
         luminanceThreshold={1.0}
         luminanceSmoothing={0.12}

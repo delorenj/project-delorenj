@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import gsap from 'gsap'
 import { SetPiece } from '../pipeline/SetPiece'
@@ -25,6 +25,17 @@ function skyColorAt(p: number, out: THREE.Color) {
 function offsetFor(i: number): [number, number] {
   const side = i % 2 === 0 ? -1 : 1
   return [side * (2.6 + (i % 3) * 1.1), -1.5 - (i % 4) * 1.4]
+}
+
+// Under frameloop="demand" (reduced-motion) nothing self-animates, so we must ask for a frame
+// whenever scroll progress changes. Harmless under "always".
+function OnDemandRender() {
+  const invalidate = useThree((s) => s.invalidate)
+  useEffect(() => {
+    invalidate()
+    return useWorld.subscribe(() => invalidate())
+  }, [invalidate])
+  return null
 }
 
 function Atmosphere() {
@@ -115,6 +126,7 @@ export function AscentScene() {
   return (
     <>
       <Atmosphere />
+      <OnDemandRender />
       <Rig />
       <hemisphereLight args={['#8FB0D6', '#5A3A2E', 0.6]} />
       <ambientLight intensity={0.8} />
