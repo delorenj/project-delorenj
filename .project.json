@@ -1,7 +1,6 @@
 {
   "project_name": "Project Delorenj",
   "project_description": "",
-  "project_slug": "project-delorenj",
   "repo_path": "/home/delorenj/code/project-delorenj",
   "ticket_provider": {
     "type": "plane",
@@ -10,5 +9,6 @@
     "board_id": "",
     "state": "planned"
   },
-  "agents": {}
+  "agents": {},
+  "project_id": "project-delorenj"
 }
